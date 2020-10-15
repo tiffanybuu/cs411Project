@@ -1,0 +1,4 @@
+{
+    "git.ignoreLimitWarning": true,
+    "python.pythonPath": "${workspaceRoot}/env/bin/python3"
+}
