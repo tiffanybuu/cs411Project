@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request
-from __init__ import db
-from response import send_response
-
+from flask import Blueprint, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from cs411.db import db
+from cs411.backend.response import send_response
 users = Blueprint('users', __name__)
 
 # define main page for login 
