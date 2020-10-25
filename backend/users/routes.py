@@ -13,12 +13,18 @@ def index():
 # signup page
 @users.route('/signup', methods=['POST'])
 def signup():
-    # form input should be the same as here
-    firstName = request.form['first_name']
-    lastName = request.form['last_name']
-    username = request.form['username']
-    password = request.form['password']
+    # # form input should be the same as here
+    # firstName = request.form['first_name']
+    # lastName = request.form['last_name']
+    # username = request.form['username']
+    # password = request.form['password']
+    data = request.get_json()
+    firstName = data.get('first_name')
+    lastName = data.get('last_name')
+    username = data.get('username')
+    password = data.get('password')
 
+    
     if not username or not password:
         # 400 error, need username or password
         return send_response(status=400, message="Username and Password is required")
@@ -53,7 +59,27 @@ def signup():
 
 # login page 
 @users.route('/login', methods=["POST"])
-def login():
-    body = request.get_json()
+def login():    
+    data = request.get_json()
 
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return send_response(status=400, message="Username and Password is required")
+    
     # sql, select * From User_Account WHERE UserId = UserId 
+    result = db.session.execute(
+        "SELECT * FROM User_Account WHERE userID = :username", {"username": username}
+    )
+    user = result.fetchone()
+
+    if not user:
+        return send_response(status=400, message="Username not found")
+    
+    if user.Password != password:
+        return send_response(status=400, message="Password incorrect. Try again")
+    else:
+        return send_response(status=200, data={"username": user.UserID,
+            "FirstName": user.FirstName, "LastName": user.LastName, 
+            "FollowingCount": user.FollowingCount, "FollowerCount": user.FollowerCount})
