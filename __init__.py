@@ -52,4 +52,42 @@ with engine.connect() as con:
     )
     con.execute(table)
 
+    table = text(
+        '''CREATE TABLE IF NOT EXISTS Playlist(
+            PlaylistID INT NOT NULL PRIMARY KEY,
+            UserID VARCHAR(100),
+            Title VARCHAR(100),
+            Description VARCHAR(100),
+            DateCreated VARCHAR(100),
+            Duration VARCHAR(100),
+            FOREIGN KEY (UserID) REFERENCES User_Account(UserID)
+                ON DELETE CASCADE
+        )
+        ''' 
+    )
+    con.execute(table)
+
+    table = text(
+        '''CREATE TABLE IF NOT EXISTS Tags(
+            TagName VARCHAR(100) NOT NULL PRIMARY KEY
+        )
+        '''
+    )
+    con.execute(table)
+
+    table = text(
+        '''CREATE TABLE IF NOT EXISTS PlaylistEntry(
+            SongID VARCHAR(100) NOT NULL PRIMARY KEY,
+            PlaylistID INT(100),
+            SongURL VARCHAR(100),
+            Source VARCHAR(100),
+            SongDuration VARCHAR(100),
+            Position INT(100),
+            FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID)
+                ON DELETE CASCADE
+        )
+        ''' 
+    )
+    con.execute(table)
+
     # return app
