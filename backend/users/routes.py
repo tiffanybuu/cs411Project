@@ -30,7 +30,6 @@ def signup():
         "SELECT userID FROM User_Account WHERE userID = :username", {"username": username}
     )
     result = result.fetchone()
-    print(result)
     if result is None:
         # we can now add this user 
         try:

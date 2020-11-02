@@ -7,6 +7,8 @@ from sqlalchemy_utils import create_database, database_exists
 
 from .db.db import db
 from .backend.users.routes import users
+from .backend.playlists.routes import playlists
+
 DATABASE = {
     'drivername': 'mysql+pymysql',
     'username': 'root',
@@ -20,8 +22,9 @@ app = Flask(__name__)
 CORS(app)
 
 
-
+# registering blueprints
 app.register_blueprint(users)
+app.register_blueprint(playlists)
 
 # initialize database 411_project if it doesn't exist
 url = URL(**DATABASE)
@@ -56,7 +59,7 @@ with engine.connect() as con:
 
     table = text(
         '''CREATE TABLE IF NOT EXISTS Playlist(
-            PlaylistID INT NOT NULL PRIMARY KEY,
+            PlaylistID VARCHAR(100) NOT NULL PRIMARY KEY,
             UserID VARCHAR(100),
             Title VARCHAR(100),
             Description VARCHAR(100),
@@ -80,7 +83,7 @@ with engine.connect() as con:
     table = text(
         '''CREATE TABLE IF NOT EXISTS PlaylistEntry(
             SongID VARCHAR(100) NOT NULL PRIMARY KEY,
-            PlaylistID INT(100),
+            PlaylistID VARCHAR(100),
             SongURL VARCHAR(100),
             Source VARCHAR(100),
             SongDuration VARCHAR(100),
