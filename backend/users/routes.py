@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from cs411.db import db
+from cs411 import db
 from cs411.backend.response import send_response
 users = Blueprint('users', __name__)
 
@@ -13,11 +13,6 @@ def index():
 # signup page
 @users.route('/signup', methods=['POST'])
 def signup():
-    # # form input should be the same as here
-    # firstName = request.form['first_name']
-    # lastName = request.form['last_name']
-    # username = request.form['username']
-    # password = request.form['password']
     data = request.get_json()
     firstName = data.get('first_name')
     lastName = data.get('last_name')
@@ -32,15 +27,17 @@ def signup():
 
     # first check if the user exists 
     result = db.session.execute(
-        "SELECT TOP 1 FROM User_Account WHERE userID = :username", {"username": username}
+        "SELECT userID FROM User_Account WHERE userID = :username", {"username": username}
     )
+    result = result.fetchone()
+    print(result)
     if result is None:
         # we can now add this user 
         try:
             result = db.session.execute(
                 '''INSERT INTO User_Account (UserID, Password, FirstName, LastName, FollowingCount, FollowerCount)
-                    VALUES (:username, :password, :firstName, :lastName)''',
-                    {"username": username, "password": password, "firstName": firstName, "lastName": lastName}
+                    VALUES (:username, :password, :firstName, :lastName, :following, :follower)''',
+                    {"username": username, "password": password, "firstName": firstName, "lastName": lastName, "following": 0, "follower": 0}
             )
             db.session.commit()
         except Exception as e:
@@ -54,10 +51,10 @@ def signup():
 
     new_user = result.fetchone()
 
-    return send_response(status=200, data={"UserID": new_user.UserID}) 
+    return send_response(status=200, data={"UserID": new_user.UserID})
 
 
-# login page 
+# login page
 @users.route('/login', methods=["POST"])
 def login():    
     data = request.get_json()
@@ -68,7 +65,6 @@ def login():
     if not username or not password:
         return send_response(status=400, message="Username and Password is required")
     
-    # sql, select * From User_Account WHERE UserId = UserId 
     result = db.session.execute(
         "SELECT * FROM User_Account WHERE userID = :username", {"username": username}
     )

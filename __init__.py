@@ -35,6 +35,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # initialize Flask SQLAlchemy 
 db.init_app(app)
+db = SQLAlchemy()
+
 
 #initalize the tables if doesn't exist
 engine = create_engine(url)
