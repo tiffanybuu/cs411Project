@@ -7,17 +7,20 @@ from cs411.backend.response import send_response
 playlists = Blueprint('playlists', __name__)
 
 # create a new playlist 
-@playlists.route('/new-playlist', methods=['POST'])
-def new_playlist():
+@playlists.route('/new-playlist/<userID>', methods=['POST'])
+def new_playlist(userID):
     data = request.get_json()
     print(data)
     
-    userID = data.get('userID')
+    # userID = data.get('userID')
     title = data.get('title')
     description = data.get('description')
 
-    # create unique playlistID identifier (userID-title)
-    playlistID = userID+'-'+title
+    # create unique playlistID identifier 
+    # important! format = (userID-title), where spaces in original title are 
+    # replaced with '-'
+    id_title = title.replace(" ", "-")
+    playlistID = userID+'-'+id_title
     duration = 0 
 
     # get current date
@@ -58,6 +61,7 @@ def new_playlist():
     return send_response(status=200, data=
         {
             "Playlist": {
+                "PlaylistID": playlist.PlaylistID,
                 "Title": playlist.Title,
                 "Description": playlist.Description,
                 "DateCreated": playlist.DateCreated,
@@ -66,18 +70,77 @@ def new_playlist():
         }
     )
 
+# get a user's total number of playlists 
+@playlists.route('/get-playlists/<userID>', methods=['GET'])
+def get_playlists(userID):
+
+    result = db.session.execute(
+        "SELECT * From Playlist WHERE userID = :userID",
+        {"userID": userID}
+    )
+    playlists_list = []
+    for playlist in result:
+        playlists_list.append(
+            {
+                "PlaylistID": playlist.PlaylistID,
+                "Title": playlist.Title,
+                "Description": playlist.Description,
+                "DateCreated": playlist.DateCreated,
+                "Duration": playlist.Duration
+            }
+        ) 
+    return send_response(status=200, data={"Playlists": playlists_list})
+
+# search for playlists from a given query 
+@playlists.route('/search-playlists/<query>', methods=['GET']) 
+def search_playlist(query):
+    result = db.session.execute(
+        "SELECT * FROM Playlist WHERE Title LIKE '%{0}%' OR Description LIKE '%{0}%'"
+        .format(query)
+    )
+    playlists_list = []
+    for playlist in result:
+        playlists_list.append(
+            {
+                "Title": playlist.Title,
+                "PlaylistID": playlist.PlaylistID,
+                "Description": playlist.Description,
+                "DateCreated": playlist.DateCreated,
+                "Duration": playlist.Duration
+            }
+        )
+    return send_response(status=200, data={"SearchResults": playlists_list})
+
+
+#update playlist description
+@playlists.route('/update-playlist/<playlistID>', methods=['PUT'])
+def update_playlist(playlistID):
+    data = request.get_json() 
+
+    description = data.get('description')
+
+    if not description:
+        return send_response(status=400, message="Title or Description should be filled out.")
+
+    if description:
+        result = db.session.execute(
+            '''UPDATE Playlist SET Description = :description WHERE PlaylistID = :playlistID''',
+            {"description": description, "playlistID": playlistID}
+        )
+        db.session.commit() 
+
+    return send_response(status=200, message="Updated Playlist!")
 
 # create a new playlist 
-@playlists.route('/delete-playlist', methods=['DELETE'])
-def delete_playlist():
+@playlists.route('/delete-playlist/<userID>', methods=['DELETE'])
+def delete_playlist(userID):
     data = request.get_json()
-    print(data)
-    
-    userID = data.get('userID')
+
     title = data.get('title')
 
     # create unique playlistID identifier (userID-title)
-    playlistID = userID+'-'+title
+    id_title = title.replace(" ", "-")
+    playlistID = userID+'-'+id_title
 
 
     try:
@@ -91,4 +154,5 @@ def delete_playlist():
     except Exception as e:
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
+
 
