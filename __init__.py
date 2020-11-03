@@ -64,7 +64,7 @@ with engine.connect() as con:
             Title VARCHAR(100),
             Description VARCHAR(100),
             DateCreated VARCHAR(100),
-            Duration VARCHAR(100),
+            Duration INT,
             FOREIGN KEY (UserID) REFERENCES User_Account(UserID)
                 ON DELETE CASCADE
         )
@@ -84,9 +84,10 @@ with engine.connect() as con:
         '''CREATE TABLE IF NOT EXISTS PlaylistEntry(
             SongID VARCHAR(100) NOT NULL PRIMARY KEY,
             PlaylistID VARCHAR(100),
+            SongTitle VARCHAR(100),
             SongURL VARCHAR(100),
             Source VARCHAR(100),
-            SongDuration VARCHAR(100),
+            SongDuration INT,
             Position INT(100),
             FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID)
                 ON DELETE CASCADE

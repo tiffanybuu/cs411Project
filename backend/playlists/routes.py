@@ -156,3 +156,71 @@ def delete_playlist(userID):
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
 
+# get all songs in a certain playlist 
+@playlists.route('/get-songs/<playlistID>', methods=['GET'])
+def get_song(playlistID):
+    result = db.session.execute(
+        "SELECT * FROM PlaylistEntry WHERE PlaylistID = :playlistID", {"playlistID": playlistID}
+    )
+    songs = []
+    for song in result:
+        songs.append(
+            {
+                "SongID": song.SongID,
+                "SongTitle": song.SongTitle,
+                "Source": song.Source,
+                "SongDuration": song.SongDuration,
+                "Position": song.Position,
+                "SongURL": song.SongURL
+            }
+        )
+    return send_response(status=200, data={"Songs": songs})
+
+# add new song to playlist 
+@playlists.route('/add-song/<playlistID>', methods=['POST'])
+def add_song(playlistID):
+    data = request.get_json() 
+
+    # better to create this id in the frontend, maybe format userID-songURL 
+    songID = data.get('songID')
+    songTitle = data.get('songTitle')
+
+    # For spotify this will be the URI (format = spotify:track:spotifyID)
+    songURL = data.get('songURL')
+    source = data.get('source')
+    # spotify API does ms 
+    songDuration = data.get('songDuration')
+    position = data.get('position')
+
+    try:
+        result = db.session.execute(
+            '''INSERT INTO PlaylistEntry (SongID, PlaylistID, SongTitle, Source, SongDuration, 
+                Position, SongURL)
+                VALUES (:songID, :playlistID, :songTitle, :source, :songDuration, :position, 
+                    :songURL)''',
+                {"songID": songID, "playlistID": playlistID, "songTitle": songTitle, "source": source,
+                "songDuration": songDuration, "position": position, "songURL": songURL}
+        )
+        db.session.commit()
+        return send_response(status=200, message="Added song successfully!")
+
+    except Exception as e:
+        print(e)
+        return send_response(status=500, message="Oops, something went wrong. Try again")
+    
+# delete a song from a playlist
+@playlists.route('/delete-song/<playlistID>/<songID>', methods=['DELETE'])
+def delete_song(playlistID, songID):
+    try:
+        # create the playlist 
+        result = db.session.execute(
+            '''DELETE FROM PlaylistEntry WHERE PlaylistID = :playlistID 
+                AND SongID = :songID''',
+                {"playlistID": playlistID, "songID": songID}
+        )
+        db.session.commit()
+        return send_response(status=200, message="Song deleted from playlist!")
+    except Exception as e:
+        print(e)
+        return send_response(status=500, message="Oops, something went wrong. Try again")
+
