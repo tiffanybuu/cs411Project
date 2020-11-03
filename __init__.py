@@ -74,7 +74,10 @@ with engine.connect() as con:
 
     table = text(
         '''CREATE TABLE IF NOT EXISTS Tags(
-            TagName VARCHAR(100) NOT NULL PRIMARY KEY
+            TagName VARCHAR(100) NOT NULL,
+            PlaylistID VARCHAR(100) NOT NULL,
+            FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID)
+            ON DELETE CASCADE
         )
         '''
     )
