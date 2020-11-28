@@ -32,7 +32,8 @@ if not database_exists(url):
     create_database(url)
 
 # sqlalchemy database configuration with mysql 
-app.config['SQLALCHEMY_DATABASE_URI'] = url 
+# url
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://yfkvendmtqdwwj:8de67524b7fd2873df13a55a8eb134b6e924ba722ad58a49b10f438567017393@ec2-34-204-121-199.compute-1.amazonaws.com:5432/dfvvrig0r37a1'
 app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
