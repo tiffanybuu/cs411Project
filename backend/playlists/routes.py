@@ -188,18 +188,19 @@ def add_song(playlistID):
     # For spotify this will be the URI (format = spotify:track:spotifyID)
     songURL = data.get('songURL')
     source = data.get('source')
-    # spotify API does ms 
-    songDuration = data.get('songDuration')
-    position = data.get('position')
+
+    # check if song already exists 
+    if not get_songs_helper(playlistID, songURL):
+        return send_response(status=409, message="Song already added!")
 
     try:
         result = db.session.execute(
-            '''INSERT INTO PlaylistEntry (SongID, PlaylistID, SongTitle, Source, SongDuration, 
-                Position, SongURL)
-                VALUES (:songID, :playlistID, :songTitle, :source, :songDuration, :position, 
+            '''INSERT INTO PlaylistEntry (SongID, PlaylistID, SongTitle, Source,
+                SongURL)
+                VALUES (:songID, :playlistID, :songTitle, :source,
                     :songURL)''',
                 {"songID": songID, "playlistID": playlistID, "songTitle": songTitle, "source": source,
-                "songDuration": songDuration, "position": position, "songURL": songURL}
+                 "songURL": songURL}
         )
         db.session.commit()
         return send_response(status=200, message="Added song successfully!")
@@ -207,7 +208,17 @@ def add_song(playlistID):
     except Exception as e:
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
-    
+
+# get all songs from a playlist (inner function)
+def get_songs_helper(playlistID, songURL_to_add):
+    result = db.session.execute(
+        "SELECT * FROM PlaylistEntry WHERE PlaylistID = :playlistID", {"playlistID": playlistID}
+    )
+    for song in result:
+        if song.SongURL == songURL_to_add:
+            return False
+    return True
+
 # delete a song from a playlist
 @playlists.route('/delete-song/<playlistID>/<songID>', methods=['DELETE'])
 def delete_song(playlistID, songID):
@@ -266,7 +277,7 @@ def add_tags(playlistID):
         )
         db.session.commit() 
     except Exception as e:
-        return send_response(status=s500, message="Oops, somethin went wrong")
+        return send_response(status=500, message="Oops, somethin went wrong")
     
     return send_response(status=200, message="Tag added successfully!")
 # delete tag from playlist 

@@ -40,7 +40,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # initialize Flask SQLAlchemy 
 db.init_app(app)
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 
 #initalize the tables if doesn't exist
@@ -91,7 +91,6 @@ with engine.connect() as con:
             SongTitle VARCHAR(100),
             SongURL VARCHAR(100),
             Source VARCHAR(100),
-            Position INT(100),
             FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID)
                 ON DELETE CASCADE
         )
