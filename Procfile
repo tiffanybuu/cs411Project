@@ -1,1 +1,1 @@
-web: gunicorn app:__init__
+web: gunicorn cs411:__init__
