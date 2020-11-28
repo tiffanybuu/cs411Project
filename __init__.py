@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine.url import URL
 from sqlalchemy_utils import create_database, database_exists
 
-# from .db.db import db
+from .db.db import db
 from .backend.users.routes import users
 from .backend.playlists.routes import playlists
 
@@ -33,12 +33,13 @@ if not database_exists(url):
 
 # sqlalchemy database configuration with mysql 
 # url
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://yfkvendmtqdwwj:8de67524b7fd2873df13a55a8eb134b6e924ba722ad58a49b10f438567017393@ec2-34-204-121-199.compute-1.amazonaws.com:5432/dfvvrig0r37a1'
+app.config['SQLALCHEMY_DATABASE_URI'] = url
+#postgres://yfkvendmtqdwwj:8de67524b7fd2873df13a55a8eb134b6e924ba722ad58a49b10f438567017393@ec2-34-204-121-199.compute-1.amazonaws.com:5432/dfvvrig0r37a1
 app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # initialize Flask SQLAlchemy 
-# db.init_app(app)
+db.init_app(app)
 db = SQLAlchemy(app)
 
 
