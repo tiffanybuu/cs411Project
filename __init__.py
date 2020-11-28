@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine.url import URL
 from sqlalchemy_utils import create_database, database_exists
 
-from .db.db import db
+# from .db.db import db
 from .backend.users.routes import users
 from .backend.playlists.routes import playlists
 
@@ -38,8 +38,8 @@ app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # initialize Flask SQLAlchemy 
-db.init_app(app)
-db = SQLAlchemy()
+# db.init_app(app)
+db = SQLAlchemy(app)
 
 
 #initalize the tables if doesn't exist
