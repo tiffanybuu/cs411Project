@@ -224,3 +224,66 @@ def delete_song(playlistID, songID):
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
+# retrieve all tags from a playlist 
+@playlists.route('/get-tags/<playlistID>', methods=['GET'])
+def get_tags(playlistID):
+    result = db.session.execute(
+        "SELECT * FROM Tags WHERE PlaylistID = :playlistID",
+        {"playlistID": playlistID}
+    )
+    tag_list = []
+    for tags in result:
+        tag_list.append(
+            {
+                "TagName": tags.TagName
+            }
+        )
+    
+    return send_response(status=200, data={"Playlists": tag_list})
+
+
+# add tag to playlist 
+@playlists.route('/add-tag/<playlistID>', methods=['POST'])
+def add_tags(playlistID):
+    data = request.get_json()
+    tag = data.get('tag')
+    # check if the tag exists already with the playlist 
+    result = db.session.execute(
+        "SELECT * FROM Tags WHERE PlaylistID = :playlistID",
+        {"playlistID": playlistID}
+    )
+
+    for existing_tag in result:
+        print(tag, existing_tag)
+        if existing_tag.TagName.lower() == tag.lower():
+            return send_response(status=409, message="You already added this tag to this playlist!")
+    
+    try:
+        result = db.session.execute(
+            '''INSERT INTO Tags (TagName, PlaylistID)
+                VALUES (:tagName, :playlistID)''',
+                {"tagName": tag, "playlistID": playlistID}
+        )
+        db.session.commit() 
+    except Exception as e:
+        return send_response(status=s500, message="Oops, somethin went wrong")
+    
+    return send_response(status=200, message="Tag added successfully!")
+# delete tag from playlist 
+@playlists.route('/delete-tag/<playlistID>', methods=['DELETE'])
+def delete_tags(playlistID):
+    data = request.get_json()
+
+    tag = data.get('tag')
+    try:
+        result = db.session.execute(
+            '''DELETE FROM Tags WHERE PlaylistID = :playlistID AND TagName = :tagName''',
+            {"playlistID": playlistID, "tagName": tag}
+        
+        )
+
+        db.session.commit() 
+        return send_response(status=200, message="Playlist tag deleted!")
+    except Exception as e:
+        print(e)
+        return send_response(status=500, message="oops, something went wrong.")

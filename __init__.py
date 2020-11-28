@@ -64,7 +64,6 @@ with engine.connect() as con:
             Title VARCHAR(100),
             Description VARCHAR(100),
             DateCreated VARCHAR(100),
-            Duration INT,
             FOREIGN KEY (UserID) REFERENCES User_Account(UserID)
                 ON DELETE CASCADE
         )
@@ -90,7 +89,6 @@ with engine.connect() as con:
             SongTitle VARCHAR(100),
             SongURL VARCHAR(100),
             Source VARCHAR(100),
-            SongDuration INT,
             Position INT(100),
             FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID)
                 ON DELETE CASCADE
