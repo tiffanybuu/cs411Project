@@ -6,8 +6,8 @@ from sqlalchemy.engine.url import URL
 from sqlalchemy_utils import create_database, database_exists
 
 # from .db.db import db
-from .backend.users.routes import users
-from .backend.playlists.routes import playlists
+from backend.users.routes import users
+from backend.playlists.routes import playlists
 
 DATABASE = {
     'drivername': 'mysql+pymysql',
