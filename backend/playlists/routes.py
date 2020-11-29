@@ -333,7 +333,7 @@ def update_playlist_count():
 # advanced function 1 stuff 
 
 # creating random playlist 
-@playlists.route('/random-playlist/<tag>/<userID>', methods=['GET', 'POST'])
+@playlists.route('/random-playlist/<tag>/<userID>', methods=['POST', 'GET'])
 def create_random_playlist(tag, userID):
 
     # create the playlist 
@@ -376,53 +376,34 @@ def create_random_playlist(tag, userID):
             return send_response(status=500, message="Oops, something went wrong. Try again")
     else:
         return send_response(status=409, message="You already have a playlist with this title, choose another name!")
-   
-    # get songs from the top 3 most popular playlists attributed to the tag
-    resultPlaylists = db.session.execute(
-        '''SELECT * FROM Playlist NATURAL JOIN Tags WHERE TagName = :tag
-            ORDER BY PlaylistCount LIMIT 3''',
-            {"tag": tag}
-    )
-
-    for playlist in resultPlaylists:
-
-        resultSongs = db.session.execute(
-            '''SELECT *
-                FROM PlaylistEntry 
-                WHERE PlaylistID = :playlistID AND SongURL NOT IN (
-                    SELECT SongURL FROM PlaylistEntry WHERE PlaylistID = :newPlaylistID
-                )''', 
-                {"playlistID": playlist.PlaylistID, "newPlaylistID": playlistID}
-        )
-
-        for song in resultSongs:
-            db.session.execute(
-                '''INSERT INTO PlaylistEntry(SongID, PlaylistID, SongTitle, Source, SongURL) VALUES (
-                    CONCAT(:newPlaylistID, :colon, :songURL), :newPlaylistID, :songTitle, :source, :songURL
-                )''',
-                {"newPlaylistID": playlistID, "colon": '-', "songURL": song.SongURL, "songTitle": song.SongTitle, 
-                "source": song.Source}
-            )
-            db.session.commit() 
-        
-
-    # using our stored procedure in order to get top added songs to add to playlist
+    
+    
     engine = create_engine(url)
-
     connection = engine.raw_connection()
     cursor = connection.cursor()
 
-    cursor.callproc('Generate_Playlist', [tag, playlistID, userID])
+    cursor.callproc('Generate_Playlist', [tag, playlistID])
 
     cursor.close()
     connection.commit()
     connection.close()
 
+
+
+    # get songs from the top 3 most popular playlists attributed to the tag
+
+    engine = create_engine(url)
+    connection = engine.raw_connection()
+    cursor = connection.cursor()
+    cursor.callproc('Popular_Playlist_Songs', [tag, playlistID])
+
+    cursor.close()
+    connection.commit()
+    connection.close()
     
     result = db.session.execute(
-        "SELECT * FROM PlaylistEntry NATURAL JOIN Playlist WHERE PlaylistID = :playlistID", {"playlistID": playlistID}
+        "SELECT * FROM PlaylistEntry WHERE PlaylistID = :playlistID", {"playlistID": playlistID}
     )
-
     for song in result:
         songs.append(
             {
@@ -432,6 +413,4 @@ def create_random_playlist(tag, userID):
                 "SongURL": song.SongURL
             }
         )
-    
-
     return send_response(status=200, message="Your new playlist has been generated!", data={"Songs": songs})
