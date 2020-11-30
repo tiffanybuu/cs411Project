@@ -249,6 +249,21 @@ def delete_song(playlistID, songID):
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
+# get all tags 
+@playlists.route('/all-tags', methods=['GET'])
+def all_tags():
+    result = db.session.execute(
+        "SELECT DISTINCT TagName FROM Tags ORDER BY TagName ASC"
+    )
+    tags = []
+    items = [dict(row) for row in result.fetchall()]
+
+    for tag in items:
+        tags.append(tag["TagName"])
+    
+    return send_response(status=200, data={"Tags": tags})
+
+
 # retrieve all tags from a playlist
 @playlists.route('/get-tags/<playlistID>', methods=['GET'])
 def get_tags(playlistID):

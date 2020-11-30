@@ -53,6 +53,7 @@ function NavigationBar() {
         <NavigationItem href="/about">About</NavigationItem>
         <NavigationItem href="/search">Search</NavigationItem>
         <NavigationItem href="/playlists">Playlists</NavigationItem>
+        <NavigationItem href="/random-playlist">Random Playlist Generator</NavigationItem>
       </Box>
 
       <Stack display={['none', 'none', 'none', 'flex']} isInline>
