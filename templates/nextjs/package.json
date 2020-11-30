@@ -11,9 +11,24 @@
     "@chakra-ui/core": "^0.8.0",
     "@emotion/core": "^10.0.35",
     "@emotion/styled": "^10.0.27",
+    "axios": "^0.21.0",
+    "body-parser": "^1.19.0",
+    "bootstrap": "^4.5.3",
+    "dotenv": "^8.2.0",
+    "dotenv-webpack": "^5.1.0",
     "emotion-theming": "^10.0.27",
-    "next": "9.5.3",
-    "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "isomorphic-fetch": "^3.0.0",
+    "next": "^9.5.3",
+    "passport": "^0.4.1",
+    "passport-auth0": "^1.4.0",
+    "react": "^16.13.1",
+    "react-bootstrap": "^1.4.0",
+    "react-dom": "^16.14.0",
+    "react-hook-form": "^6.11.0",
+    "styled-components": "^5.2.1",
+    "swr": "^0.3.8",
+    "uid-safe": "^2.1.5"
   }
 }

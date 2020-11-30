@@ -57,7 +57,7 @@ function NavigationBar() {
 
       <Stack display={['none', 'none', 'none', 'flex']} isInline>
         <NavigationButton show={show}>
-          <a href="/api/login">Log in</a>
+          <a href="/login">Log in</a>
         </NavigationButton>
         <NavigationButton show={show}>Sign up</NavigationButton>
       </Stack>

@@ -2,10 +2,12 @@ from datetime import date
 from collections import defaultdict
 from flask import Blueprint, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine.url import URL
-from cs411 import db
-from cs411.backend.response import send_response
+# from sqlalchemy import create_engine, text
+# from sqlalchemy.engine.url import URL
+# from cs411 import db
+# from cs411.backend.response import send_response
+from cs411Project import db
+from cs411Project.backend.response import send_response
 
 DATABASE = {
     'drivername': 'mysql+pymysql',
@@ -18,17 +20,17 @@ url = URL(**DATABASE)
 
 playlists = Blueprint('playlists', __name__)
 
-# create a new playlist 
+# create a new playlist
 @playlists.route('/new-playlist/<userID>', methods=['POST'])
 def new_playlist(userID):
     data = request.get_json()
-    
+
     # userID = data.get('userID')
     title = data.get('title')
     description = data.get('description')
 
-    # create unique playlistID identifier 
-    # important! format = (userID-title), where spaces in original title are 
+    # create unique playlistID identifier
+    # important! format = (userID-title), where spaces in original title are
     # replaced with '-'
     id_title = title.replace(" ", "-")
     playlistID = userID+'-'+id_title
@@ -40,8 +42,8 @@ def new_playlist(userID):
 
     if not title:
         return send_response(status=400, message="Title for your playlist is required")
-    
-    # check to see if user has a playlist with the same title already 
+
+    # check to see if user has a playlist with the same title already
     result = db.session.execute(
         "SELECT PlaylistID From Playlist WHERE PlaylistID = :playlistID",
         {"playlistID": playlistID}
@@ -49,7 +51,7 @@ def new_playlist(userID):
     result = result.fetchone()
     if result is None:
         try:
-            # create the playlist 
+            # create the playlist
             result = db.session.execute(
                 '''INSERT INTO Playlist (PlaylistID, UserID, Title, Description, DateCreated)
                     VALUES (:playlistID, :userID, :title, :description, :dateCreated)''',
@@ -62,9 +64,9 @@ def new_playlist(userID):
             return send_response(status=500, message="Oops, something went wrong. Try again")
     else:
         return send_response(status=409, message="You already have a playlist with this title, choose another name!")
-    
+
     result = db.session.execute(
-        '''SELECT * FROM Playlist WHERE UserID = :userID AND 
+        '''SELECT * FROM Playlist WHERE UserID = :userID AND
         Title = :title''', {"userID": userID, "title": title}
     )
     playlist = result.fetchone()
@@ -79,7 +81,7 @@ def new_playlist(userID):
         }
     )
 
-# get a user's total number of playlists 
+# get a user's total number of playlists
 @playlists.route('/get-playlists/<userID>', methods=['GET'])
 def get_playlists(userID):
 
@@ -96,11 +98,11 @@ def get_playlists(userID):
                 "Description": playlist.Description,
                 "DateCreated": playlist.DateCreated,
             }
-        ) 
+        )
     return send_response(status=200, data={"Playlists": playlists_list})
 
-# search for playlists from a given query 
-@playlists.route('/search-playlists/<query>', methods=['GET']) 
+# search for playlists from a given query
+@playlists.route('/search-playlists/<query>', methods=['GET'])
 def search_playlist(query):
     result = db.session.execute(
         "SELECT * FROM Playlist WHERE Title LIKE '%{0}%' OR Description LIKE '%{0}%'"
@@ -122,7 +124,7 @@ def search_playlist(query):
 #update playlist description
 @playlists.route('/update-playlist/<playlistID>', methods=['PUT'])
 def update_playlist(playlistID):
-    data = request.get_json() 
+    data = request.get_json()
 
     description = data.get('description')
 
@@ -134,11 +136,11 @@ def update_playlist(playlistID):
             '''UPDATE Playlist SET Description = :description WHERE PlaylistID = :playlistID''',
             {"description": description, "playlistID": playlistID}
         )
-        db.session.commit() 
+        db.session.commit()
 
     return send_response(status=200, message="Updated Playlist!")
 
-# create a new playlist 
+# create a new playlist
 @playlists.route('/delete-playlist/<userID>', methods=['DELETE'])
 def delete_playlist(userID):
     data = request.get_json()
@@ -151,7 +153,7 @@ def delete_playlist(userID):
 
 
     try:
-        # create the playlist 
+        # create the playlist
         result = db.session.execute(
             '''DELETE FROM Playlist WHERE PlaylistID = :playlistID''',
                 {"playlistID": playlistID}
@@ -163,7 +165,7 @@ def delete_playlist(userID):
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
 
-# get all songs in a certain playlist 
+# get all songs in a certain playlist
 @playlists.route('/get-songs/<playlistID>', methods=['GET'])
 def get_song(playlistID):
     result = db.session.execute(
@@ -181,10 +183,10 @@ def get_song(playlistID):
         )
     return send_response(status=200, data={"Songs": songs})
 
-# add new song to playlist 
+# add new song to playlist
 @playlists.route('/add-song/<playlistID>', methods=['POST'])
 def add_song(playlistID):
-    data = request.get_json() 
+    data = request.get_json()
 
 
     #songID = data.get('songID')
@@ -197,7 +199,7 @@ def add_song(playlistID):
     # Creating SongID here in the form of playlistID-songURL
     songID = playlistID+'-'+songURL
 
-    # check if song already exists 
+    # check if song already exists
     if not get_songs_helper(playlistID, songURL):
         return send_response(status=409, message="Song already added!")
 
@@ -231,9 +233,9 @@ def get_songs_helper(playlistID, songURL_to_add):
 @playlists.route('/delete-song/<playlistID>/<songID>', methods=['DELETE'])
 def delete_song(playlistID, songID):
     try:
-        # create the playlist 
+        # create the playlist
         result = db.session.execute(
-            '''DELETE FROM PlaylistEntry WHERE PlaylistID = :playlistID 
+            '''DELETE FROM PlaylistEntry WHERE PlaylistID = :playlistID
                 AND SongID = :songID''',
                 {"playlistID": playlistID, "songID": songID}
         )
@@ -243,7 +245,7 @@ def delete_song(playlistID, songID):
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
-# retrieve all tags from a playlist 
+# retrieve all tags from a playlist
 @playlists.route('/get-tags/<playlistID>', methods=['GET'])
 def get_tags(playlistID):
     result = db.session.execute(
@@ -257,16 +259,16 @@ def get_tags(playlistID):
                 "TagName": tags.TagName
             }
         )
-    
+
     return send_response(status=200, data={"Playlists": tag_list})
 
 
-# add tag to playlist 
+# add tag to playlist
 @playlists.route('/add-tag/<playlistID>', methods=['POST'])
 def add_tags(playlistID):
     data = request.get_json()
     tag = data.get('tag')
-    # check if the tag exists already with the playlist 
+    # check if the tag exists already with the playlist
     result = db.session.execute(
         "SELECT * FROM Tags WHERE PlaylistID = :playlistID",
         {"playlistID": playlistID}
@@ -276,20 +278,20 @@ def add_tags(playlistID):
         print(tag, existing_tag)
         if existing_tag.TagName.lower() == tag.lower():
             return send_response(status=409, message="You already added this tag to this playlist!")
-    
+
     try:
         result = db.session.execute(
             '''INSERT INTO Tags (TagName, PlaylistID)
                 VALUES (:tagName, :playlistID)''',
                 {"tagName": tag, "playlistID": playlistID}
         )
-        db.session.commit() 
+        db.session.commit()
     except Exception as e:
         return send_response(status=500, message="Oops, somethin went wrong")
-    
+
     return send_response(status=200, message="Tag added successfully!")
 
-# delete tag from playlist 
+# delete tag from playlist
 @playlists.route('/delete-tag/<playlistID>', methods=['DELETE'])
 def delete_tags(playlistID):
     data = request.get_json()
@@ -299,10 +301,10 @@ def delete_tags(playlistID):
         result = db.session.execute(
             '''DELETE FROM Tags WHERE PlaylistID = :playlistID AND TagName = :tagName''',
             {"playlistID": playlistID, "tagName": tag}
-        
+
         )
 
-        db.session.commit() 
+        db.session.commit()
         return send_response(status=200, message="Playlist tag deleted!")
     except Exception as e:
         print(e)
@@ -315,37 +317,37 @@ def update_playlist_count():
 
     playlistID = data.get('playlistID')
 
-    # up counter by 1 
+    # up counter by 1
     try:
         result = db.session.execute(
             '''UPDATE Playlist SET PlaylistCount = PlaylistCount + 1 WHERE PlaylistID = :playlistID''',
             {"playlistID": playlistID}
         )
-        db.session.commit() 
+        db.session.commit()
 
     except Exception as e:
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
-    
+
     return send_response(status=200)
 
 
-# advanced function 1 stuff 
+# advanced function 1 stuff
 
-# creating random playlist 
+# creating random playlist
 @playlists.route('/random-playlist/<tag>/<userID>', methods=['POST', 'GET'])
 def create_random_playlist(tag, userID):
 
-    # create the playlist 
+    # create the playlist
     data = request.get_json()
     title = data.get('title')
     description = data.get('description')
 
-    # create unique playlistID identifier 
-    # important! format = (userID-title), where spaces in original title are 
+    # create unique playlistID identifier
+    # important! format = (userID-title), where spaces in original title are
     id_title = title.replace(" ", "-")
     playlistID = userID+'-'+id_title
-    
+
     # get current date
     # format = Month-Day-YYYY
     today = date.today()
@@ -353,7 +355,7 @@ def create_random_playlist(tag, userID):
 
     if not title:
         return send_response(status=400, message="Title for your playlist is required")
-    
+
     songs = []
 
     result = db.session.execute(
@@ -363,7 +365,7 @@ def create_random_playlist(tag, userID):
     result = result.fetchone()
     if result is None:
         try:
-            # create the playlist 
+            # create the playlist
             result = db.session.execute(
                 '''INSERT INTO Playlist (PlaylistID, UserID, Title, Description, DateCreated)
                     VALUES (:playlistID, :userID, :title, :description, :dateCreated)''',
@@ -376,8 +378,8 @@ def create_random_playlist(tag, userID):
             return send_response(status=500, message="Oops, something went wrong. Try again")
     else:
         return send_response(status=409, message="You already have a playlist with this title, choose another name!")
-    
-    
+
+
     engine = create_engine(url)
     connection = engine.raw_connection()
     cursor = connection.cursor()
@@ -400,7 +402,7 @@ def create_random_playlist(tag, userID):
     cursor.close()
     connection.commit()
     connection.close()
-    
+
     result = db.session.execute(
         "SELECT * FROM PlaylistEntry WHERE PlaylistID = :playlistID", {"playlistID": playlistID}
     )

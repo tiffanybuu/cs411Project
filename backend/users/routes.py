@@ -1,12 +1,13 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from cs411 import db
-from cs411.backend.response import send_response
+from cs411Project import db
+from cs411Project.backend.response import send_response
+from cs411Project.templates.nexjs.pages import index.js
 users = Blueprint('users', __name__)
 
-# define main page for login 
+# define main page for login
 @users.route('/')
-def index(): 
+def index():
     return render_template('index.html')
 
 
@@ -19,19 +20,19 @@ def signup():
     username = data.get('username')
     password = data.get('password')
 
-    
+
     if not username or not password:
         # 400 error, need username or password
         return send_response(status=400, message="Username and Password is required")
 
 
-    # first check if the user exists 
+    # first check if the user exists
     result = db.session.execute(
         "SELECT userID FROM User_Account WHERE userID = :username", {"username": username}
     )
     result = result.fetchone()
     if result is None:
-        # we can now add this user 
+        # we can now add this user
         try:
             result = db.session.execute(
                 '''INSERT INTO User_Account (UserID, Password, FirstName, LastName, FollowingCount, FollowerCount)
@@ -43,7 +44,7 @@ def signup():
             return send_response(status=500, message="Oops, something went wrong. Try again")
     else:
         return send_response(status=409, message="Username already exists! Pick another one")
-    
+
     result = db.session.execute(
         "SELECT UserID FROM User_Account WHERE UserID = :username", {"username": username}
     )
@@ -55,7 +56,7 @@ def signup():
 
 # login page
 @users.route('/login', methods=["POST"])
-def login():    
+def login():
     data = request.get_json()
 
     username = data.get("username")
@@ -63,7 +64,7 @@ def login():
 
     if not username or not password:
         return send_response(status=400, message="Username and Password is required")
-    
+
     result = db.session.execute(
         "SELECT * FROM User_Account WHERE userID = :username", {"username": username}
     )
@@ -71,10 +72,10 @@ def login():
 
     if not user:
         return send_response(status=400, message="Username not found")
-    
+
     if user.Password != password:
         return send_response(status=400, message="Password incorrect. Try again")
     else:
         return send_response(status=200, data={"username": user.UserID,
-            "FirstName": user.FirstName, "LastName": user.LastName, 
+            "FirstName": user.FirstName, "LastName": user.LastName,
             "FollowingCount": user.FollowingCount, "FollowerCount": user.FollowerCount})

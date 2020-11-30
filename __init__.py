@@ -12,12 +12,12 @@ from .backend.playlists.routes import playlists
 DATABASE = {
     'drivername': 'mysql+pymysql',
     'username': 'root',
-    'password': '',
+    'password': 'sql16774',
     'host': 'localhost',
     'database': 'cs411_project'
 }
 
-# def create_app(): 
+# def create_app():
 app = Flask(__name__)
 CORS(app)
 
@@ -31,14 +31,14 @@ url = URL(**DATABASE)
 if not database_exists(url):
     create_database(url)
 
-# sqlalchemy database configuration with mysql 
+# sqlalchemy database configuration with mysql
 # url
 app.config['SQLALCHEMY_DATABASE_URI'] = url
 #postgres://yfkvendmtqdwwj:8de67524b7fd2873df13a55a8eb134b6e924ba722ad58a49b10f438567017393@ec2-34-204-121-199.compute-1.amazonaws.com:5432/dfvvrig0r37a1
 app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# initialize Flask SQLAlchemy 
+# initialize Flask SQLAlchemy
 db.init_app(app)
 db = SQLAlchemy()
 
@@ -70,7 +70,7 @@ with engine.connect() as con:
             FOREIGN KEY (UserID) REFERENCES User_Account(UserID)
                 ON DELETE CASCADE
         )
-        ''' 
+        '''
     )
     con.execute(table)
 
@@ -95,7 +95,7 @@ with engine.connect() as con:
             FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID)
                 ON DELETE CASCADE
         )
-        ''' 
+        '''
     )
     con.execute(table)
 
@@ -106,33 +106,33 @@ with engine.connect() as con:
     # IN playlistID VARCHAR(255)
     # )
 
-    # BEGIN 
+    # BEGIN
     # DECLARE done INT default 0;
     # DECLARE songURL_v VARCHAR(255);
     # DECLARE songTitle_v VARCHAR(100);
     # DECLARE source_v VARCHAR(100);
 
-    
+
     # DECLARE songs_cur CURSOR
     # FOR
     # SELECT DISTINCT p.SongURL, p.SongTitle, p.Source
     # FROM PlaylistEntry p
-    # INNER JOIN 
+    # INNER JOIN
 	# 	(SELECT DISTINCT PlaylistID, PlaylistCount
-    #     FROM Tags NATURAL JOIN Playlist 
+    #     FROM Tags NATURAL JOIN Playlist
     #     WHERE TagName = tag
     #     ORDER BY PlaylistCount DESC
     #     LIMIT 3) as p2
 	# ON p.PlaylistID = p2.PlaylistID;
-    
+
     # DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
     # OPEN songs_cur;
     # REPEAT
     #     FETCH songs_cur INTO songURL_v, songTitle_v, source_v;
-    #     IF songURL_v NOT IN (SELECT SongURL FROM PlaylistEntry WHERE PlaylistID = newPlaylistID) 
+    #     IF songURL_v NOT IN (SELECT SongURL FROM PlaylistEntry WHERE PlaylistID = newPlaylistID)
     #     INSERT IGNORE INTO PlaylistEntry(SongID, PlaylistID, SongTitle, Source, SongURL) VALUES (CONCAT(newPlaylistID, "-", songURL_v), newPlaylistID, songTitle_v, source_v, songURL_v);
-    # UNTIL done 
+    # UNTIL done
     # END REPEAT;
 
     # CLOSE songs_cur;
@@ -144,7 +144,7 @@ with engine.connect() as con:
     # con.execute(stored_procedure)
 
 
-    
+
     # stored_procedure = text(
     #     '''CREATE PROCEDURE Generate_Playlist(
     #         IN tag VARCHAR(255),
@@ -152,23 +152,23 @@ with engine.connect() as con:
     #         IN userID VARCHAR(255)
     #         )
 
-    #         BEGIN 
+    #         BEGIN
     #         DECLARE done INT default 0;
     #         DECLARE songURL_v VARCHAR(255);
     #         DECLARE songTitle_v VARCHAR(100);
     #         DECLARE source_v VARCHAR(100);
-    #         DECLARE totCount_v INT;	
+    #         DECLARE totCount_v INT;
 
 #             DECLARE song_countcur CURSOR
     #         FOR
     #         SELECT SongURL, SongTitle, Source, COUNT(SongURL)
-    #         FROM Tags NATURAL JOIN PlaylistEntry 
-    #         WHERE TagName = tag 
+    #         FROM Tags NATURAL JOIN PlaylistEntry
+    #         WHERE TagName = tag
     #         GROUP BY SongURL, SongTitle, Source
     #         HAVING COUNT(SongURL) > 1
     #         ORDER BY COUNT(SongURL) DESC;
-    
-            
+
+
     #         DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
     #         OPEN song_countcur;
@@ -176,7 +176,7 @@ with engine.connect() as con:
     #             FETCH song_countcur INTO songURL_v, songTitle_v, source_v, totCount_v;
     #             INSERT IGNORE INTO PlaylistEntry(SongID, PlaylistID, SongTitle, Source, SongURL) VALUES (CONCAT(playlistID, "-", songURL_v), playlistID, songTitle_v, source_v, songURL_v);
     #             END IF;
-    #         UNTIL done 
+    #         UNTIL done
     #         END REPEAT;
 
     #         CLOSE song_countcur;
@@ -187,4 +187,3 @@ with engine.connect() as con:
     # con.execute(stored_procedure)
 
     # return app
-    
