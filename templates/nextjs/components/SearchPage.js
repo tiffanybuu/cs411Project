@@ -29,7 +29,12 @@ const SearchPage = (props) => {
     //  })
     console.log("Updating input to " + input)
      setInput(input);
-     fetchData(input);
+     if (input !== '') {
+      console.log('not empty')
+      fetchData(input);
+     } else {
+       setSearchList([])
+     }
     //  setSearchList(filtered);
   }
 

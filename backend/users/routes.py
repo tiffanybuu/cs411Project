@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from cs411Project import db
 from cs411Project.backend.response import send_response
-from cs411Project.templates.nexjs.pages import index.js
+# from cs411Project.templates.nexjs.pages import index.js
 users = Blueprint('users', __name__)
 
 # define main page for login

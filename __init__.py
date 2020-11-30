@@ -12,11 +12,11 @@ from .backend.playlists.routes import playlists
 DATABASE = {
     'drivername': 'mysql+pymysql',
     'username': 'root',
-    'password': 'sql16774',
+    'password': '',
     'host': 'localhost',
     'database': 'cs411_project'
 }
-
+#sql16774
 # def create_app():
 app = Flask(__name__)
 CORS(app)

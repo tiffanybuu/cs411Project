@@ -2,8 +2,8 @@ from datetime import date
 from collections import defaultdict
 from flask import Blueprint, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy import create_engine, text
-# from sqlalchemy.engine.url import URL
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine.url import URL
 # from cs411 import db
 # from cs411.backend.response import send_response
 from cs411Project import db
@@ -104,18 +104,22 @@ def get_playlists(userID):
 # search for playlists from a given query
 @playlists.route('/search-playlists/<query>', methods=['GET'])
 def search_playlist(query):
+    # result = db.session.execute(
+    #     "SELECT * FROM Playlist WHERE Title LIKE '%{0}%' OR Description LIKE '%{0}%'"
+    #     .format(query)
+    # )
     result = db.session.execute(
-        "SELECT * FROM Playlist WHERE Title LIKE '%{0}%' OR Description LIKE '%{0}%'"
-        .format(query)
+        "SELECT DISTINCT Title, PlaylistID, Description, DateCreated FROM Playlist NATURAL JOIN Tags WHERE TagName LIKE '%{0}%' OR Title LIKE '%{0}%' OR Description LIKE '%{0}%'".format(query)
     )
     playlists_list = []
-    for playlist in result:
+    items = [dict(row) for row in result.fetchall()]
+    for playlist in items:
         playlists_list.append(
             {
-                "Title": playlist.Title,
-                "PlaylistID": playlist.PlaylistID,
-                "Description": playlist.Description,
-                "DateCreated": playlist.DateCreated,
+                "Title": playlist["Title"],
+                "PlaylistID": playlist["PlaylistID"],
+                "Description": playlist["Description"],
+                "DateCreated": playlist["DateCreated"],
             }
         )
     return send_response(status=200, data={"SearchResults": playlists_list})
