@@ -101,6 +101,16 @@ def get_playlists(userID):
         )
     return send_response(status=200, data={"Playlists": playlists_list})
 
+@playlists.route('/get-specific-playlist/<playlistID>', methods=['GET'])
+def get_specific_playlist(playlistID):
+    result = db.session.execute(
+        '''SELECT * FROM Playlist WHERE PlaylistID = :playlistID''',
+        {"playlistID": playlistID}
+    )
+    items = [dict(row) for row in result.fetchall()]
+    # items = [dict(row) for row in result.fetchall()]
+    return send_response(status=200, data={'PlaylistDetails': items})
+
 # search for playlists from a given query
 @playlists.route('/search-playlists/<query>', methods=['GET'])
 def search_playlist(query):
@@ -109,7 +119,7 @@ def search_playlist(query):
     #     .format(query)
     # )
     result = db.session.execute(
-        "SELECT DISTINCT Title, PlaylistID, Description, DateCreated FROM Playlist NATURAL JOIN Tags WHERE TagName LIKE '%{0}%' OR Title LIKE '%{0}%' OR Description LIKE '%{0}%'".format(query)
+        "SELECT DISTINCT Playlist.Title, Playlist.PlaylistID, Playlist.Description, Playlist.DateCreated FROM Playlist LEFT OUTER JOIN Tags on Playlist.PlaylistID = Tags.PlaylistID WHERE Tags.TagName LIKE '%{0}%' OR Playlist.Title LIKE '%{0}%' OR Playlist.Description LIKE '%{0}%'".format(query)
     )
     playlists_list = []
     items = [dict(row) for row in result.fetchall()]
@@ -198,6 +208,7 @@ def add_song(playlistID):
 
     # For spotify this will be the URI (format = spotify:track:spotifyID)
     songURL = data.get('songURL')
+    # MAKE SURE SOURCE IS LOWERCASE
     source = data.get('source')
 
     # Creating SongID here in the form of playlistID-songURL
@@ -359,6 +370,8 @@ def create_random_playlist(tag, userID):
 
     # create the playlist
     data = request.get_json()
+    # print('request: ', data)
+
     title = data.get('title')
     description = data.get('description')
 
@@ -434,4 +447,4 @@ def create_random_playlist(tag, userID):
                 "SongURL": song.SongURL
             }
         )
-    return send_response(status=200, message="Your new playlist has been generated!", data={"Songs": songs})
+    return send_response(status=200, message="Your new playlist has been generated!", data={"PlaylistID": playlistID, "Songs": songs})

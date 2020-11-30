@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SearchBar from './SearchBar';
 import SearchList from './SearchList';
+import Router, { withRouter } from 'next/router';
 
 const SearchPage = (props) => {
   const [input, setInput] = useState('');
@@ -52,4 +53,4 @@ const SearchPage = (props) => {
    );
 }
 
-export default SearchPage
+export default withRouter(SearchPage)

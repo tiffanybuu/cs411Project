@@ -8,6 +8,7 @@ import React from 'react';
 import { ThemeProvider, CSSReset, theme } from '@chakra-ui/core';
 import NavigationBar from '../components/NavigationBar';
 import "bootstrap/dist/css/bootstrap.min.css";
+import '../styles/RandomPlaylistPage.css'
 
 const customIcons = {
   logo: {

@@ -1,0 +1,71 @@
+.tag-dropdown{
+    position: relative;
+    float: left; 
+    margin-left: 50px; 
+    margin-right: 100px; 
+}
+
+.random-modal {
+    position: relative;
+
+    top: 100px;
+    /* left: -10px; */
+}
+
+input.title-input {
+    width: 300px; 
+}
+
+input.desc-input {
+    width: 300px; 
+    margin-left: 600px;
+    display: block; 
+    margin-top: -33px; 
+}
+
+button.submit-button {
+    float: right; 
+    margin-right: 130px; 
+    margin-top: -33px; 
+}
+
+.playlist-individual-song {
+    display: inline-block; 
+    margin: 5px 5px; 
+}
+
+.song-wrapper {
+    margin-top: 60px; 
+    padding: 20px; 
+}
+
+.playlist-title {
+    font-size: 30px; 
+    font-weight: bold; 
+    text-align: center;
+    margin-top: 40px; 
+}
+h2 {
+    font-size: 18px; 
+    text-align:center; 
+    margin-top: 10px;
+}
+.playlist-description {
+    font-size: 18px; 
+    text-align: center;
+    margin-top: 10px; 
+}
+
+.playlist-date-created {
+    margin-top: 10px; 
+}
+
+.playlist-length {
+    margin-top: 10px; 
+}
+
+.random-modal-description {
+    font-size: 18px; 
+    text-align: center;
+    margin-bottom: 80px; 
+}
