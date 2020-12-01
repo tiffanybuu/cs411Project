@@ -4,15 +4,19 @@ import Router, { withRouter } from 'next/router';
 
 // CSS in /will be in RandomPlaylistPage.css
 
-class ViewPlaylistRandomPage extends React.Component {
+class PlaylistPage extends React.Component {
     constructor(props) {
         super(props)
-        let routerProps = this.props.router.query
+        // let routerProps = this.props.router.query
+        // console.log('router props: ', this.props)
+
+        // console.log(urlParams.get('userID'))
+
         this.state = {
-            title: routerProps.Title,
-            userID: routerProps.UserID,
-            tag: routerProps.Tag,
-            playlistID: routerProps.PlaylistID,
+            title: '',
+            userID: '',
+            tag: '',
+            playlistID: '',
             dateCreated: '',
             description: '',
             playlistLength: 0,
@@ -23,35 +27,57 @@ class ViewPlaylistRandomPage extends React.Component {
     }
 
     componentDidMount() {
-        // get playlist details
-        try {
-            let res = axios.get(`http://localhost:5000/get-specific-playlist/${this.state.playlistID}`);
-            res.then(ret => 
-                this.setState({
-                    description: ret.data.data.PlaylistDetails[0].Description,
-                    dateCreated: (ret.data.data.PlaylistDetails[0].DateCreated).split('-').join(' ')
-                }),
-            )
 
-        } catch (error) {
-            console.log(error);
-            throw error;
+        // get URL parameters 
+        let queryString = window.location.search; 
+        // console.log('query string: ', queryString)
+
+        let urlParams = new URLSearchParams(queryString)
+        let playlistID = urlParams.get('playlistID')
+        let userID = urlParams.get('userID')
+
+
+        this.setState({
+            playlistID: playlistID,
+            userID: userID
+        })
+
+        if (playlistID) {
+            console.log(playlistID)
+                // get playlist details
+            try {
+                let res = axios.get(`http://localhost:5000/get-specific-playlist/${playlistID}`);
+                res.then(ret => {
+                    console.log('return: ', ret)
+                    this.setState({
+                        title: ret.data.data.PlaylistDetails[0].Title,
+                        description: ret.data.data.PlaylistDetails[0].Description,
+                        dateCreated: (ret.data.data.PlaylistDetails[0].DateCreated).split('-').join(' ')
+                    })
+                }
+                )
+
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+
+            // get songs 
+            try {
+                let res = axios.get(`http://localhost:5000/get-songs/${playlistID}`);
+                res.then(ret => 
+                    this.setState({
+                        songs: ret.data.data.Songs,
+                        playlistLength: (ret.data.data.Songs).length
+                    })
+                )
+
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
         }
-
-        // get songs 
-        try {
-            let res = axios.get(`http://localhost:5000/get-songs/${this.state.playlistID}`);
-            res.then(ret => 
-                this.setState({
-                    songs: ret.data.data.Songs,
-                    playlistLength: (ret.data.data.Songs).length
-                })
-            )
-
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
+        
 
     }
 
@@ -88,6 +114,7 @@ class ViewPlaylistRandomPage extends React.Component {
             <div className='view-playlist'>
                 <h1 className='playlist-title'>{this.state.title}</h1>
                 <h2 className='playlist-description'>{this.state.description}</h2>
+                <h2 className='playlist-date-created'>Created By: {this.state.userID}</h2>
                 <h2 className='playlist-date-created'>Date Created: {this.state.dateCreated}</h2>
                 <h2 className='playlist-length'>Playlist Length: {this.state.playlistLength} songs</h2>
                 <div className='song-wrapper'> 
@@ -105,4 +132,4 @@ class ViewPlaylistRandomPage extends React.Component {
 }
 
 
-export default withRouter(ViewPlaylistRandomPage)
+export default withRouter(PlaylistPage)

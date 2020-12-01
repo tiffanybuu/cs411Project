@@ -33,7 +33,7 @@ const SearchList = ({playlists=[]}) => {
             return (
               <tr className='search-result-entry'>
                 <td className='result-td'>
-                <Link className='link-search' href={{pathname: '/playlists/', query: {playlistID: playlist.PlaylistID}}}
+                <Link className='link-search' href={{pathname: '/playlists/', query: {userID: playlist.UserID, playlistID: playlist.PlaylistID}}}
                 style = {{textDecorationLine: "none"}}
                 >
                   {playlist.Title}

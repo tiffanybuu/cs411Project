@@ -60,9 +60,15 @@ class TrendingPage extends React.Component {
                 
             )
         }
-            // else if (songs[i].Source == 'soundcloud') {
-
-            // }
+        else if (song.Source == 'soundcloud') {
+            let songUrl = song.SongURL;
+            let url = 'https://w.soundcloud.com/player/?url=' + songUrl; 
+            return (
+                <div className='top-trending-songs'>
+                    <iframe width="250" height="330" scrolling="no" frameborder="no" src={url}></iframe>
+                </div>
+            )
+        }
         
     }
 

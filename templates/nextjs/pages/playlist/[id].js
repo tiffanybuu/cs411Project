@@ -11,8 +11,11 @@ import TogglableButton from '../../components/TogglableButton';
 import ResourceCard from '../../components/ResourceCard';
 import { fetchUsers, fetchTags, fetchPlaylists, fetchEntries } from '../../clients/index';
 import { ResourceListProps, UserProps } from '../../constants/propTypes';
+import Router, { withRouter } from 'next/router';
+
 
 function Playlist({ playlistId, userId, title, description, imageUrl, dateCreated, duration, playlistEntries, tagEntries }) {
+  console.log('made to playlist page')
   const toast = useToast();
 
   const desktopWidth = 90;
@@ -109,4 +112,4 @@ export async function getStaticProps(context) {
   };
 }
 
-export default Playlist;
+export default withRouter(Playlist);

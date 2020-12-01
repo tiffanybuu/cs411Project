@@ -386,7 +386,7 @@ def update_playlist_count():
 def top_tags():
     result = db.session.execute(
         '''SELECT TagName, COUNT(PlaylistID) AS Count FROM Tags GROUP BY TagName
-            LIMIT 3'''
+            ORDER BY COUNT(PlaylistID) DESC LIMIT 3'''
     )
     tags = [dict(row) for row in result.fetchall()]
 
@@ -396,7 +396,7 @@ def top_tags():
 @playlists.route('/top-songs-tag', methods=['GET'])
 def top_songs_tags():
     result = db.session.execute(
-        '''SELECT DISTINCT SongTitle, Source, SongURL
+        '''SELECT DISTINCT SongTitle, Source, SongURL, COUNT(SongURL)
             FROM PlaylistEntry NATURAL JOIN Tags t
             INNER JOIN 
                 (SELECT TagName
@@ -405,6 +405,8 @@ def top_songs_tags():
                 ORDER BY COUNT(PlaylistID) DESC
                 LIMIT 3) as t2
                     ON t.TagName = t2.TagName
+            GROUP BY SongTitle, Source, SongURL
+            ORDER BY COUNT(SongURL) DESC
             LIMIT 3'''
     )
 
