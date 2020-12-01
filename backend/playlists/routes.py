@@ -365,12 +365,12 @@ def delete_tags(playlistID, tag):
         return send_response(status=500, message="oops, something went wrong.")
 
 # update playlist listen count (CALL WHEN ONCLICK TO A PLAYLIST)
-@playlists.route('/update-playlist-count', methods=['PUT'])
-def update_playlist_count():
-    data = request.get_json()
+@playlists.route('/update-playlist-count/<playlistID>', methods=['PUT'])
+def update_playlist_count(playlistID):
+    # data = request.get_json()
 
-    playlistID = data.get('playlistID')
-
+    # playlistID = data.get('playlistID')
+    # print(playlistID)
     # up counter by 1
     try:
         result = db.session.execute(
@@ -383,7 +383,7 @@ def update_playlist_count():
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
-    return send_response(status=200)
+    return send_response(status=200, message="ok!")
 
 # top 3 most popular tags 
 @playlists.route('/top-tags', methods=['GET']) 

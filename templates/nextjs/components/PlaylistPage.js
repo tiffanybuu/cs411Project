@@ -102,6 +102,17 @@ class PlaylistPage extends React.Component {
                 throw error;
             }
 
+            // update playlist listen count
+
+            axios.put(`http://localhost:5000/update-playlist-count/${playlistID}`)
+            .then(ret => {
+                 console.log(ret)
+            })
+            .catch(error => {
+                alert(error)
+
+            })
+
         }
     }
 
