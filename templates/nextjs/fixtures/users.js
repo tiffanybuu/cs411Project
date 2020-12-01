@@ -15,6 +15,14 @@ const USERS = [
     followerCount: 5,
     playlistId: [0],
   },
+  {
+    userId: 'babygirl',
+    firstName: 'baby',
+    lastName: 'girl',
+    followingCount: 0,
+    followerCount: 0,
+    playlistId: null,
+  },
 ];
 
 export default USERS;

@@ -9,10 +9,8 @@ import LinkWrapper from '../../components/LinkWrapper';
 import ResponsiveHeading from '../../components/ResponsiveHeading';
 import TogglableButton from '../../components/TogglableButton';
 import ResourceCard from '../../components/ResourceCard';
-import { fetchBuilds, fetchResources, fetchUsers, fetchTags } from '../../clients';
+import { fetchUsers, fetchTags, fetchPlaylists, fetchEntries } from '../../clients/index';
 import { ResourceListProps, UserProps } from '../../constants/propTypes';
-import { RESPONSIVE_TEXT_ALIGN } from '../../styles/responsiveStyles';
-import { FAVORITED_TOAST, SAVED_TOAST, UNFAVORITED_TOAST, UNSAVED_TOAST } from '../../constants/toasts';
 
 function Playlist({ playlistId, userId, title, description, imageUrl, dateCreated, duration, playlistEntries, tagEntries }) {
   const toast = useToast();
@@ -22,7 +20,7 @@ function Playlist({ playlistId, userId, title, description, imageUrl, dateCreate
   const emptyText = 'No songs for this playlist.';
 
   const playlistPageHref = '/[user]';
-  const playlistPageAs = `/${user.id}`;
+  const playlistPageAs = `/${user.userId}`;
 
   return (
     <div>
@@ -40,42 +38,14 @@ function Playlist({ playlistId, userId, title, description, imageUrl, dateCreate
         <Box textAlign={['center', 'center', 'center', 'left']}>
           <Heading as="h1" size="2xl">{name}</Heading>
           <LinkWrapper href={playlistPageHref} as={playlistPageAs}>
-            <Text>{playlist.name}</Text>
+            <Text>{playlist.title}</Text>
           </LinkWrapper>
           <Text fontSize={18} my={2} mb={3}>{description}</Text>
           <TagBadges tagNames={tagNames} fontSize={16} flexDir={['column', 'column', 'column', 'row']} />
         </Box>
 
-        {/* Likes, save buttons */}
-        <Box>
-          <Stack px={5}>
-            <TogglableButton
-              enabledText="Favorited"
-              disabledText="Favorite"
-              size="md"
-              onClick={(enabled) => (enabled ? toast(UNFAVORITED_TOAST) : toast(FAVORITED_TOAST))}
-            />
-            <TogglableButton
-              enabledText="Saved"
-              disabledText="Save"
-              size="md"
-              onClick={(enabled) => (enabled ? toast(UNSAVED_TOAST) : toast(SAVED_TOAST))}
-            />
-          </Stack>
-        </Box>
       </HeaderGrid>
       <Container desktopWidth={desktopWidth} leftColumn={70} rightColumn={30}>
-        {/* Resources */}
-        <Box>
-          <ResponsiveHeading showDivider>Resources</ResponsiveHeading>
-          <Flex flexWrap="wrap">
-            {!resources.length && <Text textAlign={RESPONSIVE_TEXT_ALIGN}>{emptyText}</Text>}
-            {resources.map((resource) => (
-              <ResourceCard key={resource.id} resource={resource} />
-            ))}
-          </Flex>
-        </Box>
-
         {/* Sidebar */}
         <Box>
           <ResponsiveHeading showDivider>Notes</ResponsiveHeading>
@@ -105,38 +75,38 @@ Playlist.defaultProps = {
   description: '',
 };
 
-// export async function getStaticPaths() {
-//   const builds = await fetchBuilds();
-//   const paths = builds.map((build) => `/build/${build.name}`);
-//   return { paths, fallback: false };
-// }
+export async function getStaticPaths() {
+  const playlists = await fetchPlaylists();
+  const paths = playlists.map((playlist) => `/playlist/${playlist.playlistId}`);
+  return { paths, fallback: false };
+}
 
-// export async function getStaticProps(context) {
-//   const buildName = context.params.name;
-//   const builds = await fetchBuilds();
-//   const { name, userId, description, entryIds, tagIds } = builds.find(
-//     (build) => build.name === buildName,
-//   );
-//
-//   const allEntries = await fetchEntries();
-//   const entries = allEntries.filter((entry) => entryIds.includes(resource.id));
-//
-//   const allTags = await fetchTags();
-//   const tags = allTags.filter((tag) => tagIds.includes(tag.id));
-//   const tagNames = tags.map((tag) => tag.name);
-//
-//   const allUsers = await fetchUsers();
-//   const builder = allUsers.find((user) => user.id === userId);
-//
-//   return {
-//     props: {
-//       name,
-//       user,
-//       description,
-//       entries,
-//       tagNames,
-//     },
-//   };
-// }
+export async function getStaticProps(context) {
+  const playlistName = context.params.title;
+  const playlists = await fetchPlaylists();
+  const { playlistId, userId, title, description, imageUrl, dateCreated, duration, playlistEntries, tagEntries } = playlists.find(
+    (playlist) => playlist.title === playlistName,
+  );
+
+  const allEntries = await fetchEntries();
+  const entries = allEntries.filter((entry) => entryIds.includes(resource.id));
+
+  const allTags = await fetchTags();
+  const tags = allTags.filter((tag) => tagIds.includes(tag.id));
+  const tagNames = tags.map((tag) => tag.name);
+
+  const allUsers = await fetchUsers();
+  const builder = allUsers.find((user) => user.id === userId);
+
+  return {
+    props: {
+      playlist,
+      user,
+      description,
+      entries,
+      tagNames,
+    },
+  };
+}
 
 export default Playlist;
