@@ -33,6 +33,20 @@ button.submit-button {
     display: inline-block; 
     margin: 5px 5px; 
 }
+Button.delete-song-button {
+    background-color: darkred; 
+    color: white; 
+    margin-top: 10px; 
+    display: block; 
+    margin: 10px auto; 
+}
+
+Button.delete-song-button:hover {
+    background-color: red; 
+    color: white; 
+
+
+}
 
 .song-wrapper {
     margin-top: 60px; 
@@ -62,7 +76,16 @@ h2 {
 
 .playlist-length {
     margin-top: 10px; 
-    margin-bottom: 50px; 
+    margin-bottom: 30px; 
+}
+
+hr.tag-divider {
+    margin-bottom: 30px; 
+}
+
+hr.add-song-divider {
+    margin-top: 30px; 
+    margin-bottom: 30px; 
 }
 
 .random-modal-description {
@@ -101,7 +124,7 @@ Button.add-tag-button.css-1lxnz98 {
 }
 
 Button.edit-description.css-1lxnz98 {
-    background-color: #1400cc;
+    background-color: #97266d;
     color: white; 
     display:inline-block; 
     /* float:right; */
@@ -115,3 +138,28 @@ Input.edit-description-input.css-1vkx4x {
     display:inline-block;
     margin-right: 10px; 
 }
+
+.add-song-wrapper {
+    margin-left: 20px; 
+    display:inline-block;
+}
+button.add-song-button {
+    background-color: green; 
+    color: white; 
+    display:inline-block; 
+}
+button.add-song-button:hover {
+    background-color: darkgreen;
+}
+
+input.add-song-link, input.add-song-title {
+    width: 300px; 
+    display: inline-block;
+    margin-right: 20px; 
+}
+
+.song-source-dropdown {
+    display:inline-block;
+    margin-right: 20px; 
+}
+

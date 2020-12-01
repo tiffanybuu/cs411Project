@@ -16,15 +16,6 @@ import {
 import axios from "axios";
 import Router, { withRouter } from 'next/router';
 
-export async function getStaticProps(context) {
-    return {
-      // Unlike `getInitialProps` the props are returned under a props key
-      // The reasoning behind this is that there's potentially more options
-      // that will be introduced in the future.
-      // For example to allow you to further control behavior per-page.
-      props: {}
-    }
-  }
 class RandomPlaylistPage extends React.Component {
     constructor(props) {
         super(props)
@@ -90,15 +81,6 @@ class RandomPlaylistPage extends React.Component {
                 {title,
                 description})
             .then (ret => {
-            //   Router.push({
-            //     pathname: '/view-playlist-random',
-            //         query: {
-            //             PlaylistID: ret.data.data.PlaylistID,
-            //             UserID: 'tbuu2',
-            //             Title: title,
-            //             Tag: tag
-            //         }
-            //     })
                 Router.push({
                     pathname: '/playlists',
                     query: {
@@ -117,42 +99,7 @@ class RandomPlaylistPage extends React.Component {
                   return
               }
             })
-
-            // try { 
-            //     let res = 
-            //     // CHANGE USERNAME TO this.props.UserID 
-            //         axios.post(`http://localhost:5000/random-playlist/${tag}/tbuu2`,
-            //             {title,
-            //             description});
-            //     res.then(ret => 
-            //         Router.push({
-            //             pathname: '/view-playlist-random',
-            //             query: {
-            //                 PlaylistID: ret.data.data.PlaylistID,
-            //                 UserID: 'tbuu2',
-            //                 Title: title,
-            //                 Tag: tag
-            //             }
-            //         })
-            //     )
-            // } catch (error) {
-            //     console.log(error);
-            //     throw error;
-            // }
         }
-        
-        
-        // Router.push({
-        //     pathname: '/view-playlist-random',
-        //     query: {
-        //         UserID: 'tbuu2',
-        //         Title: this.state.title,
-        //     }
-            
-                
-
-            
-        // });
     }
 
     render() {

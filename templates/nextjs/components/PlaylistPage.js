@@ -2,37 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import Router, { withRouter } from 'next/router';
 import {
+    Divider,
     Tag,
     Button,
-    TagLabel,
-    TagLeftIcon,
-    TagRightIcon,
     TagCloseButton,
     Input,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure,
-    FormControl,
-    FormLabel,
-    FormErrorMessage,
-    FormHelperText,
+    Menu,
+    MenuButton, 
+    MenuList,
+    MenuItem
   } from "@chakra-ui/core"
 
 // CSS in /will be in RandomPlaylistPage.css
+const songSources = ['spotify', 'soundcloud'];
 
 class PlaylistPage extends React.Component {
     constructor(props) {
         super(props)
-        // let routerProps = this.props.router.query
-        // console.log('router props: ', this.props)
-
-        // console.log(urlParams.get('userID'))
-
         this.state = {
             title: '',
             userID: '',
@@ -43,7 +29,10 @@ class PlaylistPage extends React.Component {
             playlistLength: 0,
             songs: [],
             addTag: '',
-            editDescription: ''
+            editDescription: '',
+            addSongTitle: '',
+            addSongLink: '',
+            selectedSource: '',
         }
 
         this.songProcessing = this.songProcessing.bind(this);
@@ -61,7 +50,8 @@ class PlaylistPage extends React.Component {
 
         this.setState({
             playlistID: playlistID,
-            userID: userID
+            userID: userID,
+            selectedSource: 'Source'
         })
 
         if (playlistID) {
@@ -112,17 +102,12 @@ class PlaylistPage extends React.Component {
             }
 
         }
-        
-
     }
+
+
+    // update 
     componentDidUpdate(prevProps, prevState) {
-        // console.log('pre: ',  prevState.addTag, this.state.addTag, prevState.addTag === this.state.addTag)
-        // if (this.state.addTag == '__' && prevState.addTag !== this.state.addTag) {
-        //     console.log('yes')
-        //     this.setState({
-        //         addTag: ''
-        //     })
-        // }
+
         if (prevState.description !== this.state.description) {
             try {
                 let res = axios.get(`http://localhost:5000/get-specific-playlist/${this.state.playlistID}`);
@@ -141,6 +126,22 @@ class PlaylistPage extends React.Component {
             }
 
             return
+        }
+        if (!(JSON.stringify(prevState.songs) === JSON.stringify(this.state.songs))) {
+            axios.get(`http://localhost:5000/get-songs/${this.state.playlistID}`)
+            .then (ret => {
+                let newSongs = ret.data.data.Songs; 
+                this.setState({
+                    songs: newSongs,
+                    addSongLink: '',
+                    addSongTitle: '',
+                    selectedSource: 'Source'
+                })
+            })
+            .catch(error=> {
+                alert(error)
+                return
+            })
         }
         if (!(JSON.stringify(prevState.tags) === JSON.stringify(this.state.tags))) {
             try {
@@ -228,7 +229,12 @@ class PlaylistPage extends React.Component {
 
                 <div className = 'playlist-individual-song'>
                     <iframe src={finalURL} width="250" height="330" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                    <Button className='delete-song-button' size='sm'
+                            onClick={() => this.onDeleteSong(song.SongID)}
+                        >Delete Song
+                    </Button>
                 </div>
+                
                 
             )
         }
@@ -238,10 +244,38 @@ class PlaylistPage extends React.Component {
             return (
                 <div className='playlist-individual-song'>
                     <iframe width="250" height="330" scrolling="no" frameBorder="no" src={url}></iframe>
+                    <Button className='delete-song-button' size='sm'
+                            onClick={() => this.onDeleteSong(song.SongID)}
+                        >Delete Song
+                    </Button>
                 </div>
             )
         }
         
+    }
+
+    onDeleteSong(songID) {
+        let playlistID = this.state.playlistID; 
+        axios.delete(`http://localhost:5000/delete-song/${playlistID}/${songID}`, )
+        .then (ret => {
+            // get song
+            axios.get(`http://localhost:5000/get-songs/${playlistID}`)
+            .then (ret => {
+                let newSongs = ret.data.data.Songs; 
+                this.setState({
+                    songs: newSongs,
+                })
+            })
+            .catch(error=> {
+                alert(error)
+                return
+            })
+        })
+        .catch(error=> {
+            alert
+            return
+        })
+
     }
     handleEditDescriptionChange(e) {
         let desc = e.target.value;
@@ -261,10 +295,67 @@ class PlaylistPage extends React.Component {
         })
         .catch(error=> {
             return
-            })
+        })
         
     }
 
+    handleAddSongTitle(e) {
+        let newSongTitle = e.target.value; 
+        this.setState({
+            addSongTitle: newSongTitle
+        })
+    }
+
+    handleAddSongLink(e) {
+        let newSongLink = e.target.value; 
+        this.setState({
+            addSongLink: newSongLink
+        })
+    }
+    changeSourceDropdown(source) {
+        this.setState({
+            selectedSource: source
+        })
+    }
+    onAddSong() {
+        let source = this.state.selectedSource;
+        let songURL = this.state.addSongLink;
+        let songTitle = this.state.addSongTitle; 
+
+        if (songURL && songTitle && source) {
+            axios.post(`http://localhost:5000/add-song/${this.state.playlistID}`, {source, songURL, songTitle})
+            .then (ret => {
+                // get song
+                axios.get(`http://localhost:5000/get-songs/${this.state.playlistID}`)
+                .then (ret => {
+                    let newSongs = ret.data.data.Songs; 
+                    this.setState({
+                        songs: newSongs,
+                        addSongLink: '',
+                        addSongTitle: '',
+                        selectedSource: 'Source'
+                    })
+                })
+                .catch(error=> {
+                    alert(error)
+                    return
+                })
+            })
+            .catch(error=> {
+                switch(error.response.status) {
+                    case 409:
+                        alert('Song already added!')
+                        return
+                    case 500:
+                        alert('Oops, something went wrong!')
+                        return
+                }
+            })
+    
+        } else {
+            alert('Please fill in all of the criteria!')
+        }
+    }
     render() {
 
         // console.log(this.state)
@@ -276,6 +367,8 @@ class PlaylistPage extends React.Component {
                 <h2 className='playlist-date-created'>Created By: {this.state.userID}</h2>
                 <h2 className='playlist-date-created'>Date Created: {this.state.dateCreated}</h2>
                 <h2 className='playlist-length'>Playlist Length: {this.state.playlistLength} songs</h2>
+                <Divider className = 'tag-divider'/>
+                
                 <div className='tag-wrapper'>
                     {this.state.tags.map(tag =>
                         <Tag className='ind-tag'>
@@ -302,7 +395,36 @@ class PlaylistPage extends React.Component {
                     >Edit Description</Button>
                 </div>
 
-                
+                <Divider className='add-song-divider'/>
+
+                <div className='add-song-wrapper' >
+                <Menu className='song-source-dropdown'>
+                        
+                        <MenuButton as={Button} className='song-source-dropdown'>
+                            {this.state.selectedSource}
+                        </MenuButton>
+                        <MenuList>
+                            {songSources.map(source => 
+                                <MenuItem onClick={() => this.changeSourceDropdown(source)}>
+                                    {source}
+                                </MenuItem>)
+                            }
+                        </MenuList>
+                    </Menu>
+                    <Input className='add-song-title' placeholder="Song Title" size="sm"
+                        value={this.state.addSongTitle} onChange={(e) => this.handleAddSongTitle(e)}
+                    />
+                    <Input className='add-song-link' placeholder="Spotify URI or Soundcloud URL" size="sm"
+                        value={this.state.addSongLink} onChange={(e) => this.handleAddSongLink(e)}
+                    />
+
+                   
+                    <Button className='add-song-button' size='sm'
+                            onClick={() => this.onAddSong()}
+                        >Add Song
+                    </Button>
+
+                </div>
                 <div className='song-wrapper'> 
                     {this.state.songs.map(song => 
                     this.songProcessing(song)
@@ -316,48 +438,4 @@ class PlaylistPage extends React.Component {
         
     }
 }
-function InitialFocus() {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-  
-    const initialRef = React.useRef()
-
-  
-    return (
-      <>
-        <Button onClick={onOpen}>Open Modal</Button>
-  
-        <Modal
-          initialFocusRef={initialRef}
-          finalFocusRef={finalRef}
-          isOpen={isOpen}
-          onClose={onClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Create your account</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <FormControl>
-                <FormLabel>First name</FormLabel>
-                <Input ref={initialRef} placeholder="First name" />
-              </FormControl>
-  
-              <FormControl mt={4}>
-                <FormLabel>Last name</FormLabel>
-                <Input placeholder="Last name" />
-              </FormControl>
-            </ModalBody>
-  
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3}>
-                Save
-              </Button>
-              <Button onClick={onClose}>Cancel</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </>
-    )
-  }
-
 export default withRouter(PlaylistPage)
