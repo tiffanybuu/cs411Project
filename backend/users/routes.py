@@ -79,3 +79,13 @@ def login():
         return send_response(status=200, data={"username": user.UserID,
             "FirstName": user.FirstName, "LastName": user.LastName,
             "FollowingCount": user.FollowingCount, "FollowerCount": user.FollowerCount})
+
+@users.route('/get-user-info/<userID>', methods=['GET'])
+def get_user_info(userID):
+    result = db.session.execute(
+        "SELECT * FROM User_Account WHERE UserID =:username",
+        {'username': userID}
+    )
+
+    userInfo = dict(result.fetchone())
+    return send_response(status=200, data={"UserInfo": userInfo})
