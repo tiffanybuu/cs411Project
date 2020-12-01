@@ -11,6 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import '../styles/RandomPlaylistPage.css'
 import '../styles/TrendingPage.css'
 import '../styles/search.css'
+import '../styles/login.css'
 
 const customIcons = {
   logo: {

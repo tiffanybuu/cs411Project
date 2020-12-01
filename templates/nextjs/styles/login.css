@@ -1,0 +1,19 @@
+.text-center {
+    margin-top: 50px; 
+    font-weight: bold; 
+    font-family: 30px; 
+    margin-bottom: 50px; 
+}
+
+input.form-control {
+    width: 300px; 
+    text-align: center;
+    margin: 10px auto; 
+    display: block;
+}
+
+button.btn.btn-primary {
+    margin: 20px auto; 
+    display: block; 
+    margin-top: 40px; 
+}

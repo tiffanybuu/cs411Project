@@ -32,7 +32,7 @@ def signup():
     )
     result = result.fetchone()
     if result is None:
-        # we can now add this user
+        # we can now add this userzz
         try:
             result = db.session.execute(
                 '''INSERT INTO User_Account (UserID, Password, FirstName, LastName, FollowingCount, FollowerCount)
@@ -73,8 +73,8 @@ def login():
     if not user:
         return send_response(status=400, message="Username not found")
 
-    if user.Password != password:
-        return send_response(status=400, message="Password incorrect. Try again")
+    elif user.Password != password:
+        return send_response(status=401, message="Password incorrect. Try again")
     else:
         return send_response(status=200, data={"username": user.UserID,
             "FirstName": user.FirstName, "LastName": user.LastName,

@@ -86,26 +86,52 @@ class RandomPlaylistPage extends React.Component {
         let description = this.state.description; 
         // console.log(title, description, tag)
         if (title && description && tag) {
-            try { 
-                let res = 
-                    axios.post(`http://localhost:5000/random-playlist/${tag}/tbuu2`,
-                        {title,
-                        description});
-                res.then(ret => 
-                    Router.push({
-                        pathname: '/view-playlist-random',
-                        query: {
-                            PlaylistID: ret.data.data.PlaylistID,
-                            UserID: 'tbuu2',
-                            Title: title,
-                            Tag: tag
-                        }
-                    })
-                )
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
+            axios.post(`http://localhost:5000/random-playlist/${tag}/tbuu2`,
+                {title,
+                description})
+            .then (ret => {
+              Router.push({
+                pathname: '/view-playlist-random',
+                    query: {
+                        PlaylistID: ret.data.data.PlaylistID,
+                        UserID: 'tbuu2',
+                        Title: title,
+                        Tag: tag
+                    }
+                })
+            })
+            .catch(error => {
+              switch(error.response.status) {
+                case 409:
+                  alert("You already have a playlist with this title, choose another name! Pick another one")
+                  return
+                case 500:
+                  alert("Oops, something went wrong. Try again")
+                  return
+              }
+            })
+
+            // try { 
+            //     let res = 
+            //     // CHANGE USERNAME TO this.props.UserID 
+            //         axios.post(`http://localhost:5000/random-playlist/${tag}/tbuu2`,
+            //             {title,
+            //             description});
+            //     res.then(ret => 
+            //         Router.push({
+            //             pathname: '/view-playlist-random',
+            //             query: {
+            //                 PlaylistID: ret.data.data.PlaylistID,
+            //                 UserID: 'tbuu2',
+            //                 Title: title,
+            //                 Tag: tag
+            //             }
+            //         })
+            //     )
+            // } catch (error) {
+            //     console.log(error);
+            //     throw error;
+            // }
         }
         
         

@@ -61,7 +61,7 @@ function NavigationBar() {
         <NavigationButton show={show}>
           <a href="/login">Log in</a>
         </NavigationButton>
-        <NavigationButton show={show}>Sign up</NavigationButton>
+        <NavigationButton show={show}><a href="/signup">Sign Up</a></NavigationButton>
       </Stack>
     </Flex>
   );

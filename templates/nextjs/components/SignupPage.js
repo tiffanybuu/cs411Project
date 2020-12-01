@@ -4,43 +4,68 @@ import axios from "axios";
 
 import Router, {useRouter} from "next/router";
 
-export default function LoginPage() {
+export default function SignUpPage() {
     const router = useRouter()
 
+    const [first_name, setFirstName] = useState("");
+    const [last_name, setLastName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
 
-    const onLoginSubmit = (e) => {
+    const onSignUpSubmit = (e) => {
       e.preventDefault();
-      if (username && password) {
-        
-        axios.post(`http://localhost:5000/login`, {username, password})
+      if (first_name && last_name && username && password) {
+        // call api 
+        axios.post(`http://localhost:5000/signup`, {first_name, last_name, username, password})
         .then (response => {
-          setUsername(response.data.data.username)
+          setUsername(response.data.data.UserID)
           Router.push({
             pathname: `/${username}`
           })
         })
         .catch(error => {
           switch(error.response.status) {
-            case 400:
-              alert("Username not found")
+            case 409:
+              alert("Username already exists! Pick another one")
               return
-            case 401:
-              alert("Password incorrect. Try again")
+            case 500:
+              alert("Oops, something went wrong. Try again")
               return
           }
         })
+
+
       }
     };
   
     return (
       <div>
-        <title> Login</title>
-        <h2 className="text-center"> Login </h2>
+        <title> Sign Up </title>
+        <h2 className="text-center"> Sign Up </h2>
   
-        <form onSubmit={onLoginSubmit}>
+        <form onSubmit={onSignUpSubmit}>
+          <div className="form-group">
+            <input
+              value={first_name}
+              type="first_name"
+              className="form-control"
+              id="first_name"
+              aria-describedby="first_nameHelp"
+              placeholder="First Name"
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <input
+              value={last_name}
+              onChange={(e) => setLastName(e.target.value)}
+              type="last_name"
+              className="form-control"
+              id="last_name"
+              placeholder="Last Name"
+            />
+          </div>
           <div className="form-group">
             <input
               value={username}
