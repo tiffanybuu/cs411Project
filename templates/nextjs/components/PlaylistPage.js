@@ -10,8 +10,9 @@ import {
     Menu,
     MenuButton, 
     MenuList,
-    MenuItem
+    MenuItem,
   } from "@chakra-ui/core"
+  import Link from 'next/link';
 
 // CSS in /will be in RandomPlaylistPage.css
 const songSources = ['spotify', 'soundcloud'];
@@ -359,12 +360,19 @@ class PlaylistPage extends React.Component {
     render() {
 
         // console.log(this.state)
+        let userLink = "/"+this.state.userID;
         return(
             
             <div className='view-playlist'>
                 <h1 className='playlist-title'>{this.state.title}</h1>
                 <h2 className='playlist-description'>{this.state.description}</h2>
-                <h2 className='playlist-date-created'>Created By: {this.state.userID}</h2>
+                <h2 className='playlist-user'>Created By: <Link 
+                        className='user-link-profile'
+                        href={{pathname: userLink}}
+                    >
+                        {this.state.userID}
+                    </Link>
+                </h2>
                 <h2 className='playlist-date-created'>Date Created: {this.state.dateCreated}</h2>
                 <h2 className='playlist-length'>Playlist Length: {this.state.playlistLength} songs</h2>
                 <Divider className = 'tag-divider'/>
