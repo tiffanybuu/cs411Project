@@ -1,0 +1,22 @@
+.trending-songs-header, .trending-tags-header {
+    float: left; 
+    margin-left: 20px; 
+    font-family: 18px; 
+    margin-top: 20px; 
+    font-weight: bold; 
+}
+
+.view-trending {
+    padding: 20px; 
+}
+
+.top-trending-songs {
+    display: inline-block; 
+    margin-right: 10px; 
+
+}
+.trending-tags-wrapper {
+    margin-top:60px; 
+    margin-left:35px; 
+    
+}

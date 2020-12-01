@@ -114,10 +114,6 @@ def get_specific_playlist(playlistID):
 # search for playlists from a given query
 @playlists.route('/search-playlists/<query>', methods=['GET'])
 def search_playlist(query):
-    # result = db.session.execute(
-    #     "SELECT * FROM Playlist WHERE Title LIKE '%{0}%' OR Description LIKE '%{0}%'"
-    #     .format(query)
-    # )
     result = db.session.execute(
         "SELECT DISTINCT Playlist.Title, Playlist.PlaylistID, Playlist.Description, Playlist.DateCreated FROM Playlist LEFT OUTER JOIN Tags on Playlist.PlaylistID = Tags.PlaylistID WHERE Tags.TagName LIKE '%{0}%' OR Playlist.Title LIKE '%{0}%' OR Playlist.Description LIKE '%{0}%'".format(query)
     )
@@ -133,6 +129,16 @@ def search_playlist(query):
             }
         )
     return send_response(status=200, data={"SearchResults": playlists_list})
+
+# filter user's playlists to a specific tag 
+@playlists.route('/filter-user-playlist/<tag>/<userID>', methods=['GET'])
+def filter_user_playlist(tag, userID):
+    result = db.session.execute(
+        '''SELECT PlaylistID, Title, Description, DateCreated FROM Playlist NATURAL JOIN Tags WHERE TagName =:tag AND UserID = :userID''',
+        {"tag": tag, "userID": userID}
+    )
+    items = [dict(row) for row in result.fetchall()]
+    return send_response(status=200, data={"Playlists: ": items})
 
 
 #update playlist description
@@ -260,6 +266,19 @@ def delete_song(playlistID, songID):
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
+# get most popular songs 
+@playlists.route('/top-songs', methods=['GET'])
+def top_songs(): 
+    result = db.session.execute(
+        '''SELECT SongTitle, COUNT(SongURL) AS Count FROM PlaylistEntry
+            GROUP BY SongTitle, SongURL
+            ORDER BY COUNT(SongURL) DESC
+            LIMIT 5'''
+    )
+    songs = [dict(row) for row in result.fetchall()]
+    return send_response(status=200, data={"TopSongs": songs})
+
+
 # get all tags 
 @playlists.route('/all-tags', methods=['GET'])
 def all_tags():
@@ -361,9 +380,37 @@ def update_playlist_count():
 
     return send_response(status=200)
 
+# top 3 most popular tags 
+@playlists.route('/top-tags', methods=['GET']) 
+def top_tags():
+    result = db.session.execute(
+        '''SELECT TagName, COUNT(PlaylistID) AS Count FROM Tags GROUP BY TagName
+            LIMIT 3'''
+    )
+    tags = [dict(row) for row in result.fetchall()]
 
+    return send_response(status=200, data={"tags": tags})
+
+# top 3 most popular songs from the top 3 most popular tags 
+@playlists.route('/top-songs-tag', methods=['GET'])
+def top_songs_tags():
+    result = db.session.execute(
+        '''SELECT DISTINCT SongTitle, Source, SongURL
+            FROM PlaylistEntry NATURAL JOIN Tags t
+            INNER JOIN 
+                (SELECT TagName
+                FROM Tags 
+                GROUP BY TagName
+                ORDER BY COUNT(PlaylistID) DESC
+                LIMIT 3) as t2
+                    ON t.TagName = t2.TagName
+            LIMIT 3'''
+    )
+
+    songs = [dict(row) for row in result.fetchall()]
+
+    return send_response(status=200, data={"TopSongs": songs})
 # advanced function 1 stuff
-
 # creating random playlist
 @playlists.route('/random-playlist/<tag>/<userID>', methods=['POST', 'GET'])
 def create_random_playlist(tag, userID):

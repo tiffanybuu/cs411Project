@@ -9,6 +9,7 @@ import { ThemeProvider, CSSReset, theme } from '@chakra-ui/core';
 import NavigationBar from '../components/NavigationBar';
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../styles/RandomPlaylistPage.css'
+import '../styles/TrendingPage.css'
 
 const customIcons = {
   logo: {
