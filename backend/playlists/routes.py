@@ -192,8 +192,13 @@ def get_song(playlistID):
     result = db.session.execute(
         "SELECT * FROM PlaylistEntry WHERE PlaylistID = :playlistID", {"playlistID": playlistID}
     )
+    # print(result.fetchone().SongID)
+    # if result.fetchone().SongID == '':
+    #     print(result)
     songs = []
     for song in result:
+        if song.SongID == '':
+            break
         songs.append(
             {
                 "SongID": song.SongID,
