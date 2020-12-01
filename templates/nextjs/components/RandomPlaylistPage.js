@@ -90,13 +90,20 @@ class RandomPlaylistPage extends React.Component {
                 {title,
                 description})
             .then (ret => {
-              Router.push({
-                pathname: '/view-playlist-random',
+            //   Router.push({
+            //     pathname: '/view-playlist-random',
+            //         query: {
+            //             PlaylistID: ret.data.data.PlaylistID,
+            //             UserID: 'tbuu2',
+            //             Title: title,
+            //             Tag: tag
+            //         }
+            //     })
+                Router.push({
+                    pathname: '/playlists',
                     query: {
-                        PlaylistID: ret.data.data.PlaylistID,
-                        UserID: 'tbuu2',
-                        Title: title,
-                        Tag: tag
+                        playlistID: ret.data.data.PlaylistID,
+                        userID: 'tbuu2'
                     }
                 })
             })

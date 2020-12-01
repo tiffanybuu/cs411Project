@@ -310,14 +310,12 @@ def get_tags(playlistID):
             }
         )
 
-    return send_response(status=200, data={"Playlists": tag_list})
+    return send_response(status=200, data={"TagList": tag_list})
 
 
 # add tag to playlist
-@playlists.route('/add-tag/<playlistID>', methods=['POST'])
-def add_tags(playlistID):
-    data = request.get_json()
-    tag = data.get('tag')
+@playlists.route('/add-tag/<playlistID>/<tag>', methods=['POST'])
+def add_tags(playlistID, tag):
     # check if the tag exists already with the playlist
     result = db.session.execute(
         "SELECT * FROM Tags WHERE PlaylistID = :playlistID",
@@ -342,11 +340,12 @@ def add_tags(playlistID):
     return send_response(status=200, message="Tag added successfully!")
 
 # delete tag from playlist
-@playlists.route('/delete-tag/<playlistID>', methods=['DELETE'])
-def delete_tags(playlistID):
-    data = request.get_json()
-
-    tag = data.get('tag')
+@playlists.route('/delete-tag/<playlistID>/<tag>', methods=['DELETE'])
+def delete_tags(playlistID, tag):
+    # print(request)
+    # # data = request.get_json()
+    
+    # tag = data.get('tag')
     try:
         result = db.session.execute(
             '''DELETE FROM Tags WHERE PlaylistID = :playlistID AND TagName = :tagName''',
