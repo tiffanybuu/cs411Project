@@ -42,14 +42,14 @@ const SearchPage = (props) => {
   useEffect( () => {updateInput()},[]);
 	
   return (
-    <>
-      <h1>Playlists</h1>
+    <div className = 'search-wrapper'>
+      <h1 className='search-header'>Search For Playlists!</h1>
       <SearchBar 
        input={input} 
        onChange={updateInput}
       />
       <SearchList playlists={searchList}/>
-    </>
+    </div>
    );
 }
 

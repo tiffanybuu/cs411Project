@@ -10,6 +10,7 @@ import NavigationBar from '../components/NavigationBar';
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../styles/RandomPlaylistPage.css'
 import '../styles/TrendingPage.css'
+import '../styles/search.css'
 
 const customIcons = {
   logo: {

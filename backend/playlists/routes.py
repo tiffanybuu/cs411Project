@@ -115,7 +115,7 @@ def get_specific_playlist(playlistID):
 @playlists.route('/search-playlists/<query>', methods=['GET'])
 def search_playlist(query):
     result = db.session.execute(
-        "SELECT DISTINCT Playlist.Title, Playlist.PlaylistID, Playlist.Description, Playlist.DateCreated FROM Playlist LEFT OUTER JOIN Tags on Playlist.PlaylistID = Tags.PlaylistID WHERE Tags.TagName LIKE '%{0}%' OR Playlist.Title LIKE '%{0}%' OR Playlist.Description LIKE '%{0}%'".format(query)
+        "SELECT DISTINCT Playlist.Title, Playlist.PlaylistID, Playlist.Description, Playlist.DateCreated, Playlist.UserID FROM Playlist LEFT OUTER JOIN Tags on Playlist.PlaylistID = Tags.PlaylistID WHERE Tags.TagName LIKE '%{0}%' OR Playlist.Title LIKE '%{0}%' OR Playlist.Description LIKE '%{0}%'".format(query)
     )
     playlists_list = []
     items = [dict(row) for row in result.fetchall()]
@@ -126,6 +126,7 @@ def search_playlist(query):
                 "PlaylistID": playlist["PlaylistID"],
                 "Description": playlist["Description"],
                 "DateCreated": playlist["DateCreated"],
+                "UserID": playlist["UserID"]
             }
         )
     return send_response(status=200, data={"SearchResults": playlists_list})

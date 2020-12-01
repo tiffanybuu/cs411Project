@@ -1,0 +1,34 @@
+.search-wrapper {
+    margin-top: 20px; 
+    padding: 20px 40px; 
+}
+.search-header {
+    margin-top:30px; 
+    font-family: 20px; 
+    font-weight: bold; 
+    margin-bottom: 20px; 
+}
+
+.search-result-table {
+    margin-top: 60px; 
+}
+.search-result-entry:hover {
+    background: #f2f3ff;
+    outline: none; 
+    cursor: pointer;
+}
+.result-td {
+    border: 2px solid #ccc2ff; 
+    position: relative; 
+    padding: 18px; 
+    text-decoration: none; 
+}
+.header-td {
+    position: relative; 
+    padding: 18px; 
+    font-weight: bold; 
+}
+
+.link-search {
+    text-decoration: none; 
+}
