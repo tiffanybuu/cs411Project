@@ -53,7 +53,6 @@ const User = ({ user, playlistsj }) => {
               <tr className='search-result-header'>
                 <td className='header-td'>Title</td>
                 <td className='header-td'>Description</td>
-                <td className='header-td'>Username</td>
                 <td className='header-td'>Date Created</td>
               </tr>
 
@@ -68,7 +67,6 @@ const User = ({ user, playlistsj }) => {
                       </Link>
                     </td>
                     <td className='result-td'>{playlist.Description}</td>
-                    <td className='result-td'>{playlist.UserID}</td>
                     <td className='result-td'>{playlist.DateCreated.split('-').join(' ')}</td>
                   </tr>
                 )
@@ -125,6 +123,21 @@ export async function getStaticPaths() {
    {
      params: {
        user: 'ckuch'
+     }
+   },
+   {
+     params: {
+       user: 'kaycr9'
+     }
+   },
+   {
+     params: {
+       user: 'plant'
+     }
+   },
+   {
+     params: {
+       user: 'kchen'
      }
    }
   ];
