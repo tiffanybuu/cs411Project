@@ -2,21 +2,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, Box, Text, Divider } from '@chakra-ui/core';
-import NavigationBar from '../components/NavigationBar';
-import HeaderGrid from '../components/HeaderGrid';
-import ResponsiveHeading from '../components/ResponsiveHeading';
-import Container from '../components/Container';
-import { RESPONSIVE_TEXT_ALIGN } from '../styles/responsiveStyles';
-import { fetchUsers, fetchPlaylists, fetchEntries } from '../clients';
+import NavigationBar from '../../components/NavigationBar';
+import HeaderGrid from '../../components/HeaderGrid';
+import ResponsiveHeading from '../../components/ResponsiveHeading';
+import Container from '../../components/Container';
+import { RESPONSIVE_TEXT_ALIGN } from '../../styles/responsiveStyles';
+import { fetchUsers, fetchPlaylists, fetchEntries } from '../../clients';
+import { useRouter } from 'next/router';
 
-export default function User({
-  userId,
-  firstName,
-  lastName,
-  followingCount,
-  followerCount,
-  playlistId,
-}) {
+
+const User = (  userId, firstName, lastName, followingCount, followerCount, playlistId ) => {
+  const router = useRouter()
+  const MYURL = "http://127.0.0.1:5000";
+
+  try {
+      const user = axios.get(`${MYURL}/get-user-info/cookiedog`);
+      console.log(user);
+  } catch (error) {
+      console.log(error);
+      throw error;
+  }
+
   return (
     <div>
       <NavigationBar />
@@ -36,7 +42,7 @@ export default function User({
       <Container>
         {/* User's playlists */}
         <Box>
-          <Playlists playlists={playlists} tags={tags} users={users} />
+          <Playlists playlists={playlistId} tags={tags} users={users} />
           {!playlists && (
             <Text textAlign={RESPONSIVE_TEXT_ALIGN}>
               {`${firstName} hasn't made any playlists yet.`}
@@ -103,3 +109,5 @@ User.defaultProps = {
   followerCount: 0,
   playlistId: null,
 };
+
+export default User;
