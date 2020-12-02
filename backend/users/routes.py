@@ -99,7 +99,7 @@ def follow_user():
     current_user: int = data['curr']
     follow: int = data['follow']
     with graph_db.session() as session:
-        # add users to graph if not there and then add relationship
+        # lazily add users to graph and then add relationship
         session.run(f"""
             MERGE (u:User {{id: {current_user}}})
             MERGE (f:User {{id: {follow}}})
@@ -109,10 +109,10 @@ def follow_user():
 
 @users.route('/unfollow', methods=['PUT'])
 def unfollow_user():
-    # {"curr": int, "follow": int}
+    # {"curr": str, "follow": str}
     data = request.get_json()
-    current_user: int = data['curr']
-    follow: int = data['follow']
+    current_user: str = data['curr']
+    follow: str = data['follow']
     with graph_db.session() as session:
         session.run(f"""
             MATCH (u:User {{id: {current_user}}})-[r:FOLLOWS]->(f:User {{id: {follow}}})
@@ -120,15 +120,31 @@ def unfollow_user():
         """)
     return send_response(status=200)
 
-@users.route('/graph-recommend', methods=['GET'])
+@users.route('/transitive-recommend', methods=['GET'])
 def get_transitive_recommendations():
-    # {"curr": int}
+    # {"curr": str}
     data = request.get_json()
-    current_user: int = data.get('curr')
+    current_user: str = data.get('curr')
     users = []
     with graph_db.session() as session:
         result = session.run(f"""
             MATCH (a:User {{ id:{current_user} }})-[:FOLLOWS]->(:User)-[:FOLLOWS]->(b:User)
+            WHERE b.id <> a.id
+            RETURN b.id AS id
+        """)
+        for record in result:
+            users.append(record['id'])
+    return send_response(status=200, data={'users': users})
+
+@users.route('/mutual-recommend', methods=['GET'])
+def get_mutual_recommendations():
+    # {"curr": str}
+    data = request.get_json()
+    current_user: str = data.get('curr')
+    users = []
+    with graph_db.session() as session:
+        result = session.run(f"""
+            MATCH (a:User {{ id:{current_user} }})-[:FOLLOWS]->(:User)<-[:FOLLOWS]-(b:User)
             WHERE b.id <> a.id
             RETURN b.id AS id
         """)
