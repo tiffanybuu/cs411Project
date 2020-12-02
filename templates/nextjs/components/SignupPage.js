@@ -16,12 +16,12 @@ export default function SignUpPage() {
     const onSignUpSubmit = (e) => {
       e.preventDefault();
       if (first_name && last_name && username && password) {
-        // call api 
+        // call api
         axios.post(`http://localhost:5000/signup`, {first_name, last_name, username, password})
         .then (response => {
           setUsername(response.data.data.UserID)
           Router.push({
-            pathname: `/${username}`
+            pathname: `/user/${username}`
           })
         })
         .catch(error => {
@@ -38,12 +38,12 @@ export default function SignUpPage() {
 
       }
     };
-  
+
     return (
       <div>
         <title> Sign Up </title>
         <h2 className="text-center"> Sign Up </h2>
-  
+
         <form onSubmit={onSignUpSubmit}>
           <div className="form-group">
             <input
@@ -86,7 +86,7 @@ export default function SignUpPage() {
               placeholder="Password"
             />
           </div>
-  
+
           <button type="submit" className="btn btn-primary">
             Submit
           </button>
@@ -94,4 +94,3 @@ export default function SignUpPage() {
       </div>
     );
   };
-  

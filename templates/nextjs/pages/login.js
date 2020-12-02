@@ -21,6 +21,10 @@ export default function LoginPage() {
           Router.push({
             pathname: `/user/${username}`
           })
+          //Router.push('/user/[user]', `/user/${username}`)
+          // Router.push({
+          //   pathname: `/${username}`
+          // })
         })
         .catch(error => {
           switch(error.response.status) {

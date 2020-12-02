@@ -1,31 +1,41 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, Box, Text, Divider } from '@chakra-ui/core';
-import NavigationBar from '../../components/NavigationBar';
+// import { Button, ButtonGroup } from "@chakra-ui/react";
+import NavigationButton from '../../components/NavigationButton';
 import HeaderGrid from '../../components/HeaderGrid';
 import ResponsiveHeading from '../../components/ResponsiveHeading';
 import Container from '../../components/Container';
 import { RESPONSIVE_TEXT_ALIGN } from '../../styles/responsiveStyles';
 import { fetchUsers, fetchPlaylists, fetchEntries } from '../../clients';
 import { useRouter } from 'next/router';
+import fetch from 'node-fetch';
+import axios from "axios";
 
 
-const User = (  userId, firstName, lastName, followingCount, followerCount, playlistId ) => {
-  const router = useRouter()
+const User = ({ user }) => {
+  //  userId, firstName, lastName, followingCount, followerCount, playlistId
+  const { query } = useRouter();
+  const { lang } = query;
   const MYURL = "http://127.0.0.1:5000";
+  console.log("hello here");
+  console.log(user);
 
-  try {
-      const user = axios.get(`${MYURL}/get-user-info/cookiedog`);
-      console.log(user);
-  } catch (error) {
-      console.log(error);
-      throw error;
-  }
+  var userId, firstName, lastName, followingCount, followerCount, playlists;
+  userId = user.data.UserInfo.UserID;
+  firstName = user.data.UserInfo.FirstName;
+  lastName = user.data.UserInfo.LastName;
+  followingCount = user.data.UserInfo.FollowingCount;
+  followerCount = user.data.UserInfo.FollowerCount;
+
+  const [show, setShow] = useState(false);
+  const handleToggle = () => setShow(!show);
+
+  const display = show ? 'block' : 'none';
 
   return (
     <div>
-      <NavigationBar />
       <HeaderGrid>
         <Avatar size="xl" name={firstName} m="auto" />
         <Box>
@@ -36,13 +46,16 @@ const User = (  userId, firstName, lastName, followingCount, followerCount, play
         </Box>
         <Box>
           <Text textAlign={RESPONSIVE_TEXT_ALIGN}>{`ID: ${userId}`}</Text>
+          <NavigationButton show={show}>
+            <a href="/login">Follow</a>
+          </NavigationButton>
         </Box>
       </HeaderGrid>
 
       <Container>
         {/* User's playlists */}
         <Box>
-          <Playlists playlists={playlistId} tags={tags} users={users} />
+          {/*<Playlists playlists={playlistId} tags={tags} users={users} />*/}
           {!playlists && (
             <Text textAlign={RESPONSIVE_TEXT_ALIGN}>
               {`${firstName} hasn't made any playlists yet.`}
@@ -62,52 +75,58 @@ const User = (  userId, firstName, lastName, followingCount, followerCount, play
 }
 
 export async function getStaticPaths() {
-  const users = await fetchUsers();
-  const paths = users.map((user) => `/${user.userId}`);
-  return { paths, fallback: false };
-}
+  // Return a list of possible value for id
+  const MYURL = "http://127.0.0.1:5000";
+  const request = await fetch(`${MYURL}/get-all-users`)
+  console.log(request);
 
-export async function getStaticProps(context) {
-  const userId = context.params.userId;
-  const users = await fetchUsers();
-  const {
-    id,
-    firstName,
-    lastName,
-    email,
-    followingCount,
-    followerCount,
-    playlistId,
-  } = users.find((t) => t.id === userId);
 
-  // Get playlists if available
-  const playlists = await fetchPlaylists();
-  let userPlaylists = null;
-
-  if (playlistId) {
-    userPlaylists = playlists.filter((playlist) => buildsCreated.includes(playlist.userId),
-    );
+  var paths = [];
+  for (var i = 0; i < request.length; i++) {
+    paths.push({params: { user: `$(request.usernames)` }})
   }
 
+  console.log(paths);
+
+  paths = [
+   {
+     params: {
+       user: 'babygirl'
+     }
+   },
+   {
+     params: {
+       user: 'cookiedog'
+     }
+   },
+   {
+     params: {
+       user: 'tiffbuu'
+     }
+   },
+   {
+     params: {
+       user: 'ckuch'
+     }
+   }
+  ];
+
   return {
-    props: {
-      t,
-      userPlaylists,
-    },
-  };
+    paths,
+    fallback: false
+  }
 }
 
-User.propTypes = {
-  userId: PropTypes.string.isRequired,
-  firstName: PropTypes.string.isRequired,
-  lastName: PropTypes.string,
-};
+export async function getStaticProps({ params }) {
+  // Fetch necessary data for the blog post using params.id
+  const MYURL = "http://127.0.0.1:5000";
+  const username = params.user;
+  const request = await fetch(`${MYURL}/get-user-info/${username}`);
+  const user = await request.json();
 
-User.defaultProps = {
-  email: null,
-  followingCount: 0,
-  followerCount: 0,
-  playlistId: null,
-};
+  return {
+    props: { user }
+  };
+}
 
 export default User;
