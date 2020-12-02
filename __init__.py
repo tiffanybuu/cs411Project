@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine.url import URL
 from sqlalchemy_utils import create_database, database_exists
 
-from .db.db import db
+from .db.db import db, graph_db
 from .backend.users.routes import users
 from .backend.playlists.routes import playlists
 
@@ -98,6 +98,12 @@ with engine.connect() as con:
         '''
     )
     con.execute(table)
+
+# setup neo4j
+with graph_db.session() as session:
+    session.run("CREATE DATABASE neo4j IF NOT EXISTS")
+    session.run("CREATE CONSTRAINT user_id IF NOT EXISTS ON (u:User) ASSERT u.id IS UNIQUE")
+
 
     # stored_procedure = text(
     #     '''CREATE PROCEDURE Popular_Playlist_Songs(
