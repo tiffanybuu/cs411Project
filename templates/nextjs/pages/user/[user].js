@@ -15,13 +15,6 @@ import axios from "axios";
 
 
 const User = ({ user }) => {
-  //  userId, firstName, lastName, followingCount, followerCount, playlistId
-  const { query } = useRouter();
-  const { lang } = query;
-  const MYURL = "http://127.0.0.1:5000";
-  console.log("hello here");
-  console.log(user);
-
   var userId, firstName, lastName, followingCount, followerCount, playlists;
   userId = user.data.UserInfo.UserID;
   firstName = user.data.UserInfo.FirstName;
@@ -85,7 +78,6 @@ export async function getStaticPaths() {
   for (var i = 0; i < request.length; i++) {
     paths.push({params: { user: `$(request.usernames)` }})
   }
-
   console.log(paths);
 
   paths = [
