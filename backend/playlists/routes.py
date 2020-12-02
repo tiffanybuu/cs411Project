@@ -192,8 +192,13 @@ def get_song(playlistID):
     result = db.session.execute(
         "SELECT * FROM PlaylistEntry WHERE PlaylistID = :playlistID", {"playlistID": playlistID}
     )
+    # print(result.fetchone().SongID)
+    # if result.fetchone().SongID == '':
+    #     print(result)
     songs = []
     for song in result:
+        if song.SongID == '':
+            break
         songs.append(
             {
                 "SongID": song.SongID,
@@ -310,14 +315,12 @@ def get_tags(playlistID):
             }
         )
 
-    return send_response(status=200, data={"Playlists": tag_list})
+    return send_response(status=200, data={"TagList": tag_list})
 
 
 # add tag to playlist
-@playlists.route('/add-tag/<playlistID>', methods=['POST'])
-def add_tags(playlistID):
-    data = request.get_json()
-    tag = data.get('tag')
+@playlists.route('/add-tag/<playlistID>/<tag>', methods=['POST'])
+def add_tags(playlistID, tag):
     # check if the tag exists already with the playlist
     result = db.session.execute(
         "SELECT * FROM Tags WHERE PlaylistID = :playlistID",
@@ -342,11 +345,12 @@ def add_tags(playlistID):
     return send_response(status=200, message="Tag added successfully!")
 
 # delete tag from playlist
-@playlists.route('/delete-tag/<playlistID>', methods=['DELETE'])
-def delete_tags(playlistID):
-    data = request.get_json()
-
-    tag = data.get('tag')
+@playlists.route('/delete-tag/<playlistID>/<tag>', methods=['DELETE'])
+def delete_tags(playlistID, tag):
+    # print(request)
+    # # data = request.get_json()
+    
+    # tag = data.get('tag')
     try:
         result = db.session.execute(
             '''DELETE FROM Tags WHERE PlaylistID = :playlistID AND TagName = :tagName''',
@@ -361,12 +365,12 @@ def delete_tags(playlistID):
         return send_response(status=500, message="oops, something went wrong.")
 
 # update playlist listen count (CALL WHEN ONCLICK TO A PLAYLIST)
-@playlists.route('/update-playlist-count', methods=['PUT'])
-def update_playlist_count():
-    data = request.get_json()
+@playlists.route('/update-playlist-count/<playlistID>', methods=['PUT'])
+def update_playlist_count(playlistID):
+    # data = request.get_json()
 
-    playlistID = data.get('playlistID')
-
+    # playlistID = data.get('playlistID')
+    # print(playlistID)
     # up counter by 1
     try:
         result = db.session.execute(
@@ -379,7 +383,7 @@ def update_playlist_count():
         print(e)
         return send_response(status=500, message="Oops, something went wrong. Try again")
 
-    return send_response(status=200)
+    return send_response(status=200, message="ok!")
 
 # top 3 most popular tags 
 @playlists.route('/top-tags', methods=['GET']) 

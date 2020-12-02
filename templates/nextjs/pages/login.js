@@ -14,12 +14,12 @@ export default function LoginPage() {
     const onLoginSubmit = (e) => {
       e.preventDefault();
       if (username && password) {
-        
+
         axios.post(`http://localhost:5000/login`, {username, password})
         .then (response => {
           setUsername(response.data.data.username)
           Router.push({
-            pathname: `/${username}`
+            pathname: `/user/${username}`
           })
         })
         .catch(error => {
@@ -34,12 +34,12 @@ export default function LoginPage() {
         })
       }
     };
-  
+
     return (
       <div>
         <title> Login</title>
         <h2 className="text-center"> Login </h2>
-  
+
         <form onSubmit={onLoginSubmit}>
           <div className="form-group">
             <input
@@ -61,7 +61,7 @@ export default function LoginPage() {
               placeholder="Password"
             />
           </div>
-  
+
           <button type="submit" className="btn btn-primary">
             Submit
           </button>
@@ -69,4 +69,3 @@ export default function LoginPage() {
       </div>
     );
   };
-  

@@ -7,7 +7,7 @@ import Router, { withRouter } from 'next/router';
 class ViewPlaylistRandomPage extends React.Component {
     constructor(props) {
         super(props)
-        let routerProps = this.props.router.query
+        // let routerProps = this.props.router.query
         this.state = {
             title: routerProps.Title,
             userID: routerProps.UserID,
@@ -24,6 +24,11 @@ class ViewPlaylistRandomPage extends React.Component {
 
     componentDidMount() {
         // get playlist details
+        // get URL parameters 
+        let queryString = window.location.search; 
+        let urlParams = new URLSearchParams(queryString)
+        let playlistID = urlParams.get('PlaylistID')
+        let userID = urlParams.get('UserID')
         try {
             let res = axios.get(`http://localhost:5000/get-specific-playlist/${this.state.playlistID}`);
             res.then(ret => 

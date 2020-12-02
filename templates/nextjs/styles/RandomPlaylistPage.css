@@ -1,37 +1,71 @@
+
+
+.random-modal-description {
+    margin-top: 100px; 
+}
+Divider.random-generator {
+    margin-top: 20px; 
+}
 .tag-dropdown{
-    position: relative;
-    float: left; 
-    margin-left: 50px; 
-    margin-right: 100px; 
+    display: inline-block; 
+    margin-right: 20px; 
 }
-
-.random-modal {
-    position: relative;
-
-    top: 100px;
-    /* left: -10px; */
-}
-
 input.title-input {
     width: 300px; 
+    display: inline-block; 
+    margin-right: 20px; 
 }
 
 input.desc-input {
     width: 300px; 
-    margin-left: 600px;
-    display: block; 
-    margin-top: -33px; 
+    /* margin-left: 600px; */ 
+    display: inline-block; 
+    /* margin-top: -33px;  */
+    margin-right: 20px; 
 }
 
 button.submit-button {
-    float: right; 
-    margin-right: 130px; 
-    margin-top: -33px; 
+    display: inline-block;
+    margin-right: 20px; 
 }
+
+.random-playlist-wrapper {
+    margin-top: 100px; 
+    display: block;
+    margin-left: 200px; 
+
+
+}
+
+.css-1jke4yk {
+    width: 200px !important; 
+    position: relative; 
+    margin-bottom: 10px; 
+}
+.select.css-16ut77p {
+    width: 200px; 
+    display: inline-block; 
+}
+
+
 
 .playlist-individual-song {
     display: inline-block; 
     margin: 5px 5px; 
+}
+Button.delete-song-button {
+    background-color: darkred; 
+    color: white; 
+    margin-top: 10px; 
+    display: block; 
+    margin: 10px auto; 
+}
+
+Button.delete-song-button:hover {
+    background-color: red; 
+    color: white; 
+
+
 }
 
 .song-wrapper {
@@ -59,9 +93,24 @@ h2 {
 .playlist-date-created {
     margin-top: 10px; 
 }
-
+.playlist-user {
+    margin-top: 10px; 
+    text-decoration: none;
+    color: inherit; 
+    font-weight: bold; 
+}
 .playlist-length {
     margin-top: 10px; 
+    margin-bottom: 30px; 
+}
+
+hr.tag-divider {
+    margin-bottom: 30px; 
+}
+
+hr.add-song-divider {
+    margin-top: 30px; 
+    margin-bottom: 30px; 
 }
 
 .random-modal-description {
@@ -69,3 +118,85 @@ h2 {
     text-align: center;
     margin-bottom: 80px; 
 }
+
+/* Tag.ind-tag {
+    background-color: teal;
+} */
+
+.tag-wrapper {
+    margin-left: 20px; 
+    display:inline;
+    margin-right: 20px;  
+    margin-top: 20px;
+}
+
+.ind-tag.css-btg4i2 {
+    background-color: teal;
+    margin-right: 10px; 
+    color: white;
+}
+
+
+Input.add-tag-input.css-1vkx4x {
+    width: 120px; 
+    display:inline-block;
+    margin-right:10px; 
+}
+
+Button.add-tag-button.css-1lxnz98 {
+    background-color: #97266d;
+    color: white; 
+}
+
+Button.edit-description.css-1lxnz98 {
+    background-color: #97266d;
+    color: white; 
+    display:inline-block; 
+    /* float:right; */
+}
+
+.edit-description-wrapper {
+    display:inline-block;
+}
+Input.edit-description-input.css-1vkx4x {
+    width: 300px;
+    display:inline-block;
+    margin-right: 10px; 
+}
+
+.add-song-wrapper {
+    margin-left: 20px; 
+    display:inline-block;
+}
+button.add-song-button {
+    background-color: green; 
+    color: white; 
+    display:inline-block; 
+}
+button.add-song-button:hover {
+    background-color: darkgreen;
+}
+
+input.add-song-link, input.add-song-title {
+    width: 300px; 
+    display: inline-block;
+    margin-right: 20px; 
+}
+
+.song-source-dropdown {
+    display:inline-block;
+    margin-right: 20px; 
+}
+
+Link.user-link-profile {
+    text-decoration: none;
+    color: inherit; 
+    font-weight: bold; 
+}
+Link.user-link-profile:hover {
+    color: #97266d; 
+    text-decoration: none;
+    font-weight: bold; 
+}
+
+
