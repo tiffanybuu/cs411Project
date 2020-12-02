@@ -85,7 +85,18 @@ const User = ({ user, playlistsj }) => {
 
       {/* User's following */}
       <Container>
+        <Box>
+        </Box>
 
+        <Box>
+          <ResponsiveHeading>Follows</ResponsiveHeading>
+          <Text textAlign={RESPONSIVE_TEXT_ALIGN}>
+            {`${firstName} has ${followerCount} followers`}
+          </Text>
+          <Text textAlign={RESPONSIVE_TEXT_ALIGN}>
+            {`${firstName} is following ${followingCount} users`}
+          </Text>
+        </Box>
       </Container>
     </div>
   );
