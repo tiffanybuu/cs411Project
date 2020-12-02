@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from cs411Project import db
+from ...db.db import graph_db
 from cs411Project.backend.response import send_response
 # from cs411Project.templates.nexjs.pages import index.js
 users = Blueprint('users', __name__)
@@ -89,3 +90,48 @@ def get_user_info(userID):
 
     userInfo = dict(result.fetchone())
     return send_response(status=200, data={"UserInfo": userInfo})
+
+# advanced function 2 stuff
+@users.route('/follow', methods=['PUT'])
+def follow_user():
+    # {"curr": int, "follow": int}
+    data = request.get_json()
+    current_user: int = data['curr']
+    follow: int = data['follow']
+    with graph_db.session() as session:
+        # add users to graph if not there and then add relationship
+        session.run(f"""
+            MERGE (u:User {{id: {current_user}}})
+            MERGE (f:User {{id: {follow}}})
+            MERGE (u)-[r:FOLLOWS]->(f)
+        """)
+    return send_response(status=200)
+
+@users.route('/unfollow', methods=['PUT'])
+def unfollow_user():
+    # {"curr": int, "follow": int}
+    data = request.get_json()
+    current_user: int = data['curr']
+    follow: int = data['follow']
+    with graph_db.session() as session:
+        session.run(f"""
+            MATCH (u:User {{id: {current_user}}})-[r:FOLLOWS]->(f:User {{id: {follow}}})
+            DELETE r
+        """)
+    return send_response(status=200)
+
+@users.route('/graph-recommend', methods=['GET'])
+def get_transitive_recommendations():
+    # {"curr": int}
+    data = request.get_json()
+    current_user: int = data.get('curr')
+    users = []
+    with graph_db.session() as session:
+        result = session.run(f"""
+            MATCH (a:User {{ id:{current_user} }})-[:FOLLOWS]->(:User)-[:FOLLOWS]->(b:User)
+            WHERE b.id <> a.id
+            RETURN b.id AS id
+        """)
+        for record in result:
+            users.append(record['id'])
+    return send_response(status=200, data={'users': users})
