@@ -91,6 +91,13 @@ def get_user_info(userID):
     userInfo = dict(result.fetchone())
     return send_response(status=200, data={"UserInfo": userInfo})
 
+@users.route('/get-all-users', methods=['GET'])
+def get_all_users():
+    result = db.session.execute("SELECT UserID FROM User_Account")
+
+    users = [row[0] for row in result.fetchall()]
+    return send_response(status=200, data={"usernames": users})
+
 # advanced function 2 stuff
 @users.route('/follow', methods=['PUT'])
 def follow_user():
