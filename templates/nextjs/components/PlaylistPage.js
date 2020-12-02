@@ -143,7 +143,7 @@ class PlaylistPage extends React.Component {
             axios.get(`http://localhost:5000/get-songs/${this.state.playlistID}`)
             .then (ret => {
                 let newSongs = ret.data.data.Songs; 
-                console.log(newSongs, newSongs.length)
+                // console.log(newSongs, newSongs.length)
                 this.setState({
                     songs: newSongs,
                     addSongLink: '',

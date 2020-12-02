@@ -33,11 +33,7 @@ class RandomPlaylistPage extends React.Component {
     }
 
     componentDidMount() {
-        // CHANGE WHEN WE HAVE ADDED USER 
-        // get URL parameters 
-        // let queryString = window.location.search; 
-        // let urlParams = new URLSearchParams(queryString)
-        // let userID = urlParams.get('userID')
+
         axios.get(`http://localhost:5000/all-tags`,)
         .then (ret => {
             // console.log('set: ', ret.data.data.Tags)
@@ -81,7 +77,11 @@ class RandomPlaylistPage extends React.Component {
     }
 
     onSubmitP() {
-        // call backend to generate random playlist 
+        // get URL parameters 
+        let queryString = window.location.search; 
+        let urlParams = new URLSearchParams(queryString)
+        let userID = urlParams.get('userID')
+
         let title = this.state.title; 
         let description = this.state.description; 
         
@@ -90,7 +90,7 @@ class RandomPlaylistPage extends React.Component {
 
         // console.log(title, description, tag)
         if (title && description && tag) {
-            axios.post(`http://localhost:5000/random-playlist/${tag}/tbuu2`,
+            axios.post(`http://localhost:5000/random-playlist/${tag}/${userID}`,
                 {title,
                 description})
             .then (ret => {
